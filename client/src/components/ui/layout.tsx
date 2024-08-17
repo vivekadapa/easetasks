@@ -5,10 +5,12 @@ import Navbar from './navbar'
 
 const Layout = () => {
     return (
-        <div>
+        <div className='relative'>
             <Navbar />
             <Sidebar />
-            <Outlet />
+            <div className='mx-80'>
+                <Outlet />
+            </div>
         </div>
     )
 }
