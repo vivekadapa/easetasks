@@ -5,11 +5,13 @@ import Navbar from './navbar'
 
 const Layout = () => {
     return (
-        <div className='relative'>
+        <div className='overflow-hidden'>
             <Navbar />
-            <Sidebar />
-            <div className='mx-80'>
-                <Outlet />
+            <div className='relative min-w-full flex items-center'>
+                <Sidebar />
+                <div className='overflow-x-auto'>
+                    <Outlet />
+                </div>
             </div>
         </div>
     )

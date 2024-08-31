@@ -1,23 +1,29 @@
-import React from "react";
-import { useAuth0 } from "@auth0/auth0-react";
+import React, { useState, useEffect } from "react";
+import { FiPlus, FiTrash } from "react-icons/fi";
+import { motion } from "framer-motion";
+import { FaFire } from "react-icons/fa";
+import Board from "@/components/Board";
+import { useAuth } from "@/context/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
-const Profile = () => {
-  const { user, isAuthenticated, isLoading } = useAuth0();
-  console.log(user?.picture)
+export const CustomKanban = () => {
+
+  const value = useAuth();
+  const { user, verifyToken } = value;
+  const navigate = useNavigate();
   console.log(user)
-  if (isLoading) {
-    return <div>Loading ...</div>;
-  }
+
+  useEffect(() => {
+    const token = localStorage.getItem("token")
+    if (!token) {
+      navigate('/login')
+    }
+  }, [])
 
   return (
-    isAuthenticated && user && (
-      <div>
-        <img src={user.picture} className="w-8 h-8" alt={user.name} />
-        <h2>{user.name}</h2>
-        <p>{user.email}</p>
-      </div>
-    )
+    <div className="h-[88vh] text-neutral-50">
+      <Board />
+    </div>
   );
 };
 
-export default Profile;
