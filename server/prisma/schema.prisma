@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String       @id @default(auto()) @map("_id") @db.ObjectId
+  email      String       @unique
+  password   String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  boards     Board[]
+  Invitation Invitation[]
+}
+
+model Board {
+  id         String       @id @default(auto()) @map("_id") @db.ObjectId
+  title      String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  ownerId    String       @db.ObjectId
+  owner      User         @relation(fields: [ownerId], references: [id])
+  columns    Column[]
+  Invitation Invitation[]
+}
+
+model Column {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  title   String
+  order   Int
+  boardId String @db.ObjectId
+  board   Board  @relation(fields: [boardId], references: [id])
+  cards   Card[]
+}
+
+model Card {
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  title    String
+  content  String?
+  order    Int
+  columnId String    @db.ObjectId
+  column   Column    @relation(fields: [columnId], references: [id])
+  subtasks Subcard[] @relation("CardSubtasks")
+}
+
+model Subcard {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  order        Int
+  parentCardId String @db.ObjectId
+  parentCard   Card   @relation("CardSubtasks", fields: [parentCardId], references: [id])
+}
+
+model Invitation {
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  boardId       String  @db.ObjectId
+  board         Board   @relation(fields: [boardId], references: [id])
+  userId        String  @db.ObjectId
+  user          User    @relation(fields: [userId], references: [id])
+  canAddColumns Boolean @default(true)
+  canAddCards   Boolean @default(true)
+  canEditBoard  Boolean @default(false) // Set to false to restrict editing/deleting the board
+}
