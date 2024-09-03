@@ -24,7 +24,7 @@ model Board {
   updatedAt  DateTime     @updatedAt
   ownerId    String       @db.ObjectId
   owner      User         @relation(fields: [ownerId], references: [id])
-  columns    Column[]
+  columns    Column[]     @relation(name: "BoardToColumn")
   Invitation Invitation[]
 }
 
@@ -33,35 +33,36 @@ model Column {
   title   String
   order   Int
   boardId String @db.ObjectId
-  board   Board  @relation(fields: [boardId], references: [id])
-  cards   Card[]
+  board   Board  @relation(name: "BoardToColumn", fields: [boardId], references: [id], onDelete: Cascade)
+  cards   Card[] @relation(name: "ColumnToCard")
 }
 
 model Card {
   id       String    @id @default(auto()) @map("_id") @db.ObjectId
   title    String
   content  String?
-  order    Int
+  // order    Int
+  priority String
   columnId String    @db.ObjectId
-  column   Column    @relation(fields: [columnId], references: [id])
+  column   Column    @relation(name: "ColumnToCard", fields: [columnId], references: [id], onDelete: Cascade)
   subtasks Subcard[] @relation("CardSubtasks")
 }
 
 model Subcard {
   id           String @id @default(auto()) @map("_id") @db.ObjectId
   title        String
-  order        Int
+  // order        Int
   parentCardId String @db.ObjectId
-  parentCard   Card   @relation("CardSubtasks", fields: [parentCardId], references: [id])
+  parentCard   Card   @relation("CardSubtasks", fields: [parentCardId], references: [id], onDelete: Cascade)
 }
 
 model Invitation {
   id            String  @id @default(auto()) @map("_id") @db.ObjectId
   boardId       String  @db.ObjectId
-  board         Board   @relation(fields: [boardId], references: [id])
+  board         Board   @relation(fields: [boardId], references: [id], onDelete: Cascade)
   userId        String  @db.ObjectId
   user          User    @relation(fields: [userId], references: [id])
   canAddColumns Boolean @default(true)
   canAddCards   Boolean @default(true)
-  canEditBoard  Boolean @default(false) // Set to false to restrict editing/deleting the board
+  canEditBoard  Boolean @default(false)
 }

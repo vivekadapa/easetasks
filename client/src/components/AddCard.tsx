@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useRef, useState } from 'react'
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { motion } from "framer-motion";
 import { FiPlus, FiTrash } from "react-icons/fi";
 import { Button } from "@/components/ui/button"
@@ -24,11 +24,31 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { useAuth } from '@/context/AuthProvider';
+import axios from 'axios';
 
 
 const AddCard = ({ column, setCards }: any) => {
-    const [text, setText] = useState("");
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("")
     const [adding, setAdding] = useState(false);
+    const [columns, setColumns] = useState([])
+    const value = useAuth()
+    const board = value.currBoard;
+
+
+    useEffect(() => {
+        const fetchBoard = async () => {
+            const response = await axios.request({
+                url: `${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/column/${board?.id}`,
+                method: "get",
+            })
+            setColumns(response.data)
+        }
+        if (board && board.id) {
+            fetchBoard()
+        }
+    }, [value])
 
     const [subtasks, setSubtasks] = useState<string[]>([]);
     const [priority, setPriority] = useState<string | null>(null);
@@ -63,24 +83,34 @@ const AddCard = ({ column, setCards }: any) => {
         }
     };
     //@ts-ignore
-    const handleSubmit = (e) => {
-        console.log("hello wrold")
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!text.trim().length) return;
+        const body = {
+            title,
+            description,
+            priority,
+            columnId: status,
+            subtasks
+        }
 
-        const newCard = {
-            column,
-            title: text.trim(),
-            id: Math.random().toString(),
-        };
+        try {
+            const response = await axios.request({
+                url: `${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/card`,
+                method: "post",
+                data: body
+            })
+            console.log(response)
+            setCards(response.data)
+        } catch (error) {
+            console.log(error)
+        }
 
         //@ts-ignore
         setCards((pv) => [...pv, newCard]);
 
         setAdding(false);
     };
-    console.log(subtasks.length)
 
     return (
         <>
@@ -92,7 +122,9 @@ const AddCard = ({ column, setCards }: any) => {
                 >
                     <Dialog>
                         <DialogTrigger asChild>
-                            <Button variant="outline"><FiPlus className='mr-2 h-4 w-4' /> Add</Button>
+                            <Button variant="outline" disabled={board === undefined || Object.keys(board).length === 0 || columns.length === 0}>
+                                <FiPlus className='mr-2 h-4 w-4' /> Add a new task
+                            </Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-[425px]">
                             <DialogHeader className='mx-auto'>
@@ -107,18 +139,19 @@ const AddCard = ({ column, setCards }: any) => {
                                         id="title"
                                         placeholder='Title'
                                         className=""
-                                        onChange={(e) => (setText(e.target.value))}
+                                        onChange={(e) => (setTitle(e.target.value))}
                                         required
                                     />
                                 </div>
                                 <div className="flex flex-col gap-4">
-                                    <Label htmlFor="username">
+                                    <Label htmlFor="description">
                                         Description
                                     </Label>
                                     <Textarea
-                                        id="username"
+                                        id="description"
                                         placeholder='Mention your description here.....'
                                         className="col-span-3"
+                                        onChange={(e) => (setDescription(e.target.value))}
                                     />
                                 </div>
                             </div>
@@ -164,17 +197,21 @@ const AddCard = ({ column, setCards }: any) => {
                                 </div>
                                 <div className='flex flex-col gap-3'>
                                     <Label>Status</Label>
-                                    <Select onValueChange={(value) => setStatus(value)}>
+                                    <Select onValueChange={(value) => {
+                                        console.log(value)
+                                        setStatus(value)
+                                    }}>
                                         <SelectTrigger className="w-[180px]">
                                             <SelectValue placeholder="Select status" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
                                                 <SelectLabel>Status</SelectLabel>
-                                                <SelectItem value="todo">To Do</SelectItem>
-                                                <SelectItem value="in-progress">In Progress</SelectItem>
-                                                <SelectItem value="done">Done</SelectItem>
-                                                <SelectItem value="blocked">Blocked</SelectItem>
+                                                {
+                                                    columns && columns.length > 0 && columns.map((c: any) => (
+                                                        <SelectItem value={c.id}>{c.title}</SelectItem>
+                                                    ))
+                                                }
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>

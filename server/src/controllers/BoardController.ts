@@ -73,22 +73,58 @@ export const updateBoard = async (req: Request, res: Response) => {
     const { title, columns } = req.body;
 
     try {
+
         const board = await prisma.board.update({
             where: { id },
-            data: {
-                title,
-                columns: {
-                    deleteMany: {}, // delete existing columns
-                    create: columns, // create new columns
-                },
-            },
+            data: { title },
+            include: { columns: true }
         });
-        res.status(200).json(board);
+
+        const existingColumns = board.columns;
+
+        if (existingColumns.length >= columns.length) {
+            for (let i = 0; i < columns.length; i++) {
+                await prisma.column.update({
+                    where: { id: existingColumns[i].id },
+                    data: { title: columns[i].title }
+                });
+            }
+            for (let i = columns.length; i < existingColumns.length; i++) {
+                await prisma.column.delete({
+                    where: { id: existingColumns[i].id }
+                });
+            }
+        } else {
+            for (let i = 0; i < existingColumns.length; i++) {
+                await prisma.column.update({
+                    where: { id: existingColumns[i].id },
+                    data: { title: columns[i].title }
+                });
+            }
+            // Create new columns
+            for (let i = existingColumns.length; i < columns.length; i++) {
+                await prisma.column.create({
+                    data: {
+                        title: columns[i].title,
+                        order: columns[i].order,
+                        boardId: id,
+                    }
+                });
+            }
+        }
+        const updatedBoard = await prisma.board.update({
+            where: { id },
+            data: { title },
+            include: { columns: true }
+        });
+
+        res.status(200).json(updatedBoard);
     } catch (error) {
         console.error("Error updating board:", error);
         res.status(500).json({ error: "Failed to update board" });
     }
 };
+
 
 export const deleteBoard = async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -97,7 +133,9 @@ export const deleteBoard = async (req: Request, res: Response) => {
         await prisma.board.delete({
             where: { id },
         });
-        res.status(204).send();
+        res.status(204).json({
+            message: "successfully deleted board"
+        });
     } catch (error) {
         console.error("Error deleting board:", error);
         res.status(500).json({ error: "Failed to delete board" });

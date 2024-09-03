@@ -1,8 +1,7 @@
 import express from 'express'
 import cron from 'node-cron'
 import axios from 'axios'
-// import dbConnect from './utils/dbConnect'
-import { authRouter,boardRouter } from './routes'
+import { authRouter, boardRouter, columnRouter, cardRouter } from './routes'
 import cors from "cors";
 import dotenv from 'dotenv'
 
@@ -15,7 +14,9 @@ app.use(cors())
 
 
 app.use('/api/v1/auth', authRouter);
-app.use('/api/v1/board',boardRouter)
+app.use('/api/v1/board', boardRouter)
+app.use('/api/v1/column', columnRouter)
+app.use('/api/v1/card', cardRouter)
 
 
 

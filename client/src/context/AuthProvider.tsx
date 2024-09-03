@@ -1,14 +1,35 @@
+import axios from "axios";
+import { Loader } from "lucide-react";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 
 const AuthContext = createContext<AuthContextType>({
     user: null,
+    setUser: () => { },
     login: async () => { },
     logout: () => { },
     isAuthenticated: false,
-    verifyToken:()=>{},
+    verifyToken: () => { },
+    currBoard: null,
+    setCurrBoard: () => { },
+    currBoardWColumns: null,
+    setCurrBoardWColumns: () => { },
 })
+
+interface Board {
+    id: string,
+    title: string,
+    ownerId: string,
+    columns: Column[]
+}
+
+interface Column {
+    boardId: string,
+    id: string,
+    order: number,
+    title: string
+}
 
 type AuthProviderProps = {
     children: ReactNode
@@ -16,27 +37,55 @@ type AuthProviderProps = {
 interface User {
     id: string;
     email: string;
+    boards: Board[];
 }
 
 interface AuthContextType {
     user: User | null;
+    setUser: (user: User | null) => void;
     login: (email: string, password: string) => Promise<void>;
     logout: () => void;
     isAuthenticated: boolean;
-    verifyToken:()=>void
+    verifyToken: (token: string) => void
+    currBoard: Board | null
+    setCurrBoard: (board: Board | null) => void;
+    currBoardWColumns: Board | null,
+    setCurrBoardWColumns: (board: Board | null) => void;
 }
 
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [user, setUser] = useState<User | null>(null);
     const navigate = useNavigate();
+    const [currBoard, setCurrBoard] = useState({})
+    const [currBoardWColumns, setCurrBoardWColumns] = useState([])
 
+
+    console.log("Context re-render")
+    const token = localStorage.getItem('token');
     useEffect(() => {
-        const token = localStorage.getItem('token');
+
         if (token) {
             verifyToken(token);
         }
-    }, []);
+        if (currBoard && currBoard.id) {
+            fetchBoard()
+        }
+    }, [token]);
+
+
+    const fetchBoard = async () => {
+        try {
+            const response = await axios.request({
+                url: `${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/board/board/${currBoard?.id}`,
+                method: "get",
+            })
+            setCurrBoardWColumns(response.data)
+        } catch (error) {
+            console.log(error);
+        }
+        // setColumns(response.data.columns)
+    }
 
     const verifyToken = async (token: string) => {
         try {
@@ -49,8 +98,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
             if (response.ok) {
                 const userData = await response.json();
-                console.log("user data " + userData.data)
                 setUser(userData.data);
+                if (Object.keys(currBoard).length === 0) {
+                    setCurrBoard(userData.data.boards[0]);
+                }
             } else {
                 localStorage.removeItem('token');
                 setUser(null);
@@ -94,6 +145,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         logout,
         verifyToken,
         isAuthenticated: !!user,
+        currBoard,
+        setCurrBoard,
+        currBoardWColumns,
+        setCurrBoardWColumns
     };
 
     return (

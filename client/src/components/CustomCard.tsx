@@ -14,6 +14,7 @@ const DropIndicator = ({ beforeId, column }: any) => {
 
 
 const Card = ({ title, id, column, handleDragStart }: any) => {
+
   return (
     <>
       <DropIndicator beforeId={id} column={column} />
