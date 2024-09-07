@@ -28,27 +28,17 @@ import { useAuth } from '@/context/AuthProvider';
 import axios from 'axios';
 
 
-const AddCard = ({ column, setCards }: any) => {
+const AddCard = ({ column }: any) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("")
     const [adding, setAdding] = useState(false);
-    const [columns, setColumns] = useState([])
+    // const [columns, setColumns] = useState([])
     const value = useAuth()
+    const token = localStorage.getItem("token") || ""
     const board = value.currBoard;
 
+    const [dialogOpen, setDialogOpen] = useState(false)
 
-    useEffect(() => {
-        const fetchBoard = async () => {
-            const response = await axios.request({
-                url: `${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/column/${board?.id}`,
-                method: "get",
-            })
-            setColumns(response.data)
-        }
-        if (board && board.id) {
-            fetchBoard()
-        }
-    }, [value])
 
     const [subtasks, setSubtasks] = useState<string[]>([]);
     const [priority, setPriority] = useState<string | null>(null);
@@ -65,6 +55,7 @@ const AddCard = ({ column, setCards }: any) => {
             setError("Fill the subtask");
         }
     };
+
 
     const handleRemoveInput = (index: number) => {
         if (subtasks.length == 1) {
@@ -100,14 +91,14 @@ const AddCard = ({ column, setCards }: any) => {
                 method: "post",
                 data: body
             })
-            console.log(response)
-            setCards(response.data)
+            console.log(board?.title + " inside add card")
+            const updatedBoardResponse = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/board/board/${board?.id}`);
+            console.log("Updated Board Response:", updatedBoardResponse.data);
+            value.setCurrBoard(updatedBoardResponse.data);
+            setDialogOpen(false)
         } catch (error) {
             console.log(error)
         }
-
-        //@ts-ignore
-        setCards((pv) => [...pv, newCard]);
 
         setAdding(false);
     };
@@ -118,11 +109,11 @@ const AddCard = ({ column, setCards }: any) => {
                 <motion.button
                     layout
                     onClick={() => setAdding(true)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-neutral-400 transition-colors hover:text-neutral-50"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs dark:text-neutral-400 transition-colors hover:text-neutral-50"
                 >
-                    <Dialog>
+                    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button variant="outline" disabled={board === undefined || Object.keys(board).length === 0 || columns.length === 0}>
+                            <Button variant="outline" onClick={() => setDialogOpen(true)} disabled={board === undefined || board === null || Object.keys(board).length === 0 || board.columns.length === 0}>
                                 <FiPlus className='mr-2 h-4 w-4' /> Add a new task
                             </Button>
                         </DialogTrigger>
@@ -208,7 +199,7 @@ const AddCard = ({ column, setCards }: any) => {
                                             <SelectGroup>
                                                 <SelectLabel>Status</SelectLabel>
                                                 {
-                                                    columns && columns.length > 0 && columns.map((c: any) => (
+                                                    board?.columns && board?.columns.length > 0 && board?.columns.map((c: any) => (
                                                         <SelectItem value={c.id}>{c.title}</SelectItem>
                                                     ))
                                                 }

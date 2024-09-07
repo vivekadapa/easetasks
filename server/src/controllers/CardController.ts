@@ -4,7 +4,6 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export const createCard = async (req: Request, res: Response) => {
-    console.log(req.body)
     try {
         const { title, description, order, priority, columnId, subtasks } = req.body;
         if (!columnId) {

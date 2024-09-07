@@ -2,6 +2,8 @@ import axios from "axios";
 import { Loader } from "lucide-react";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useRenderCount } from "@uidotdev/usehooks";
+
 
 
 const AuthContext = createContext<AuthContextType>({
@@ -15,6 +17,11 @@ const AuthContext = createContext<AuthContextType>({
     setCurrBoard: () => { },
     currBoardWColumns: null,
     setCurrBoardWColumns: () => { },
+    cards: null,
+    setCards: () => { },
+    fetchColumnsWCards: () => {
+        return { columns: [], cards: [] };
+    }
 })
 
 interface Board {
@@ -49,8 +56,11 @@ interface AuthContextType {
     verifyToken: (token: string) => void
     currBoard: Board | null
     setCurrBoard: (board: Board | null) => void;
-    currBoardWColumns: Board | null,
-    setCurrBoardWColumns: (board: Board | null) => void;
+    currBoardWColumns: any,
+    setCurrBoardWColumns: (board: any | null) => void;
+    cards: any,
+    setCards: (card: any | null) => void,
+    fetchColumnsWCards: (data: string | null) => { columns: any[]; cards: any[] };
 }
 
 
@@ -59,33 +69,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const navigate = useNavigate();
     const [currBoard, setCurrBoard] = useState({})
     const [currBoardWColumns, setCurrBoardWColumns] = useState([])
-
-
-    console.log("Context re-render")
+    const [cards, setCards] = useState([])
+    const renderCount = useRenderCount();
+    console.log("Render Count " + renderCount)
     const token = localStorage.getItem('token');
     useEffect(() => {
-
         if (token) {
             verifyToken(token);
         }
-        if (currBoard && currBoard.id) {
-            fetchBoard()
-        }
-    }, [token]);
 
-
-    const fetchBoard = async () => {
-        try {
-            const response = await axios.request({
-                url: `${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/board/board/${currBoard?.id}`,
-                method: "get",
-            })
-            setCurrBoardWColumns(response.data)
-        } catch (error) {
-            console.log(error);
-        }
-        // setColumns(response.data.columns)
-    }
+    }, [currBoard, token]);
 
     const verifyToken = async (token: string) => {
         try {
@@ -99,7 +92,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             if (response.ok) {
                 const userData = await response.json();
                 setUser(userData.data);
-                if (Object.keys(currBoard).length === 0) {
+                if (currBoard === null || Object.keys(currBoard).length === 0) {
                     setCurrBoard(userData.data.boards[0]);
                 }
             } else {
@@ -148,7 +141,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         currBoard,
         setCurrBoard,
         currBoardWColumns,
-        setCurrBoardWColumns
+        setCurrBoardWColumns,
+        cards,
+        setCards,
     };
 
     return (

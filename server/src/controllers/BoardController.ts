@@ -6,7 +6,6 @@ const prisma = new PrismaClient()
 export const createBoard = async (req: Request, res: Response) => {
 
     const { title, userId, columns } = req.body;
-    console.log(req.body)
     try {
         const board = await prisma.board.create({
             data: {
@@ -16,6 +15,17 @@ export const createBoard = async (req: Request, res: Response) => {
                     create: columns,
                 },
             },
+            include: {
+                columns: {
+                    include: {
+                        cards: {
+                            include: {
+                                subtasks: true
+                            }
+                        }
+                    }
+                }
+            }
         });
         res.status(201).json(board);
     } catch (error) {
@@ -51,11 +61,18 @@ export const getBoardById = async (req: Request, res: Response) => {
         const board = await prisma.board.findUnique({
             where: { id },
             include: {
-                owner: true,
-                columns: true,
-                Invitation: true,
-            },
+                columns: {
+                    include: {
+                        cards: {
+                            include: {
+                                subtasks: true
+                            }
+                        }
+                    }
+                }
+            }
         });
+        console.log(board)
 
         if (!board) {
             return res.status(404).json({ error: "Board not found" });
@@ -71,7 +88,7 @@ export const getBoardById = async (req: Request, res: Response) => {
 export const updateBoard = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { title, columns } = req.body;
-
+    console.log(columns)
     try {
 
         const board = await prisma.board.update({
@@ -80,44 +97,43 @@ export const updateBoard = async (req: Request, res: Response) => {
             include: { columns: true }
         });
 
-        const existingColumns = board.columns;
+        await Promise.all(
+            columns.map(async (c: any) => {
+                if (c?.id) {
+                    // Update column
+                    await prisma.column.update({
+                        where: { id: c?.id },
+                        data: { title: c.title }
+                    });
+                } else {
+                    // Create new column
+                    await prisma.column.create({
+                        data: {
+                            title: c.title,
+                            order: c.order,
+                            boardId: id,
+                        }
+                    });
+                }
+            })
+        );
 
-        if (existingColumns.length >= columns.length) {
-            for (let i = 0; i < columns.length; i++) {
-                await prisma.column.update({
-                    where: { id: existingColumns[i].id },
-                    data: { title: columns[i].title }
-                });
-            }
-            for (let i = columns.length; i < existingColumns.length; i++) {
-                await prisma.column.delete({
-                    where: { id: existingColumns[i].id }
-                });
-            }
-        } else {
-            for (let i = 0; i < existingColumns.length; i++) {
-                await prisma.column.update({
-                    where: { id: existingColumns[i].id },
-                    data: { title: columns[i].title }
-                });
-            }
-            // Create new columns
-            for (let i = existingColumns.length; i < columns.length; i++) {
-                await prisma.column.create({
-                    data: {
-                        title: columns[i].title,
-                        order: columns[i].order,
-                        boardId: id,
-                    }
-                });
-            }
-        }
-        const updatedBoard = await prisma.board.update({
+        const updatedBoard = await prisma.board.findUnique({
             where: { id },
-            data: { title },
-            include: { columns: true }
+            include: {
+                columns: {
+                    include: {
+                        cards: {
+                            include: {
+                                subtasks: true
+                            }
+                        }
+                    }
+                }
+            }
         });
 
+        console.log(updatedBoard)
         res.status(200).json(updatedBoard);
     } catch (error) {
         console.error("Error updating board:", error);

@@ -19,20 +19,13 @@ const Sidebar = () => {
     function handleSideBar() {
         setSideBarOff((prev) => !prev)
     }
-    const [board, setBoard] = useState({})
     const value = useAuth()
     const user = value.user
     const currBoard = value.currBoard
 
-    useEffect(() => {
-        if (currBoard) {
-            setBoard(currBoard)
-        }
-    }, [user])
 
 
     const handleBoardChange = (e: React.MouseEvent<HTMLButtonElement>, id: string) => {
-        console.log(`Board with ID ${id} clicked`);
         const selectedBoard = user?.boards.find((board: any) => board.id === id);
         if (selectedBoard) {
             value.setCurrBoard(selectedBoard);
@@ -42,15 +35,15 @@ const Sidebar = () => {
     return (
 
         <>
-            <div className={`flex flex-col justify-between overflow-y-auto border-r-[0.01px] border-[#d8dbe0] h-screen dark:bg-[#0f172a] transform transition-all duration-300 ${sidebarOff ? '-translate-x-full w-0' : 'translate-x-0 w-[20rem]'}`}>
+            <div className={`flex-shrink-0 flex flex-col justify-between overflow-y-auto border-r-[0.01px] border-[#d8dbe0] h-screen dark:bg-[#0f172a] transform transition-all duration-300 ${sidebarOff ? '-translate-x-full w-0' : 'translate-x-0 w-[20rem]'}`}>
                 <div className={`flex-grow mt-32 my-4`}>
                     <h2 className='scroll-m-20 text-xl text-center font-semibold tracking-widest'>ALL BOARDS {user?.boards ? `(${user?.boards.length})` : ""} </h2>
-                    <div className='flex flex-col gap-4 mt-8'>
+                    <div className='flex w-full flex-col gap-4 mt-8'>
 
                         {
                             user && user.boards.length > 0 ? user.boards.map((board: any) => {
                                 return (
-                                    <Button key={board?.id} onClick={(e) => handleBoardChange(e, board?.id)} variant="ghost" className={`flex w-[90%] items-center rounded-r-full gap-2 ${board?.id === currBoard?.id ? "bg-[#156255]" : ""}`}>
+                                    <Button key={board?.id} onClick={(e) => handleBoardChange(e, board?.id)} variant="ghost" className={`flex w-[90%] items-center justify-start rounded-r-full pl-6 gap-2 ${board?.id === currBoard?.id ? "bg-[#156255]" : ""}`}>
                                         <MdOutlineSpaceDashboard className='w-6 h-6' />
                                         <p className='text-xl'>{board?.title}</p>
                                     </Button>
@@ -60,7 +53,7 @@ const Sidebar = () => {
                             </div>
 
                         }
-                        <AddBoard />
+                        <AddBoard buttonTitle='Create new board' />
                     </div>
 
                 </div>

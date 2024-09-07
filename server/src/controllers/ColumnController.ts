@@ -24,7 +24,6 @@ export const createColumn = async (req: Request, res: Response) => {
 
 
 export const getColumnsByBoardId = async (req: Request, res: Response) => {
-    console.log(req.params.boardId)
     try {
         const { boardId } = req.params;
         const columns = await prisma.column.findMany({
@@ -54,5 +53,15 @@ export const updateColumnsById = async (req: Request, res: Response) => {
 };
 
 
-// export const 
+export const deleteColumnById = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        await prisma.column.delete({
+            where: { id }
+        });
+        res.status(200).json({ message: "Deleted Column Successfully" });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to delete column' });
+    }
+}
 

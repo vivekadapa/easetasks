@@ -14,7 +14,7 @@ const userSchema = z.object({
 
 
 export const Register = async (req: Request, res: Response) => {
-    console.log(req.body)
+
     try {
         const { email, password } = userSchema.parse(req.body);
 
@@ -72,19 +72,33 @@ export const verify = async (req: Request, res: Response) => {
             res.sendStatus(403);
         } else {
             try {
-                const user = await prisma.user.findUnique(
-                    {
-                        where: { id: authData?.userId },
-                        include: {
-                            boards: true,
-                            Invitation: true
-                        }
-                    });
+                const user = await prisma.user.findUnique({
+                    where: { id: authData?.userId },
+                    select: {
+                        id: true,
+                        email: true,
+                        createdAt: true,
+                        updatedAt: true,
+                        boards: {
+                            include: {
+                                columns: {
+                                    include: {
+                                        cards: {
+                                            include: {
+                                                subtasks: true
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                    }
+                });
                 console.log(user)
                 if (!user) {
                     return res.status(404).json({ message: 'User not found' });
                 }
-                res.json({ data: { id: user.id, email: user.email, boards: user.boards, invitations: user.Invitation } });
+                res.json({ data: user });
             } catch (error) {
                 res.status(500).json({ message: 'Server error' });
             }

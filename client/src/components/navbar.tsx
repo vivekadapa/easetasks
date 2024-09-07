@@ -24,8 +24,6 @@ const Navbar = () => {
     const value = useAuth()
     const user = value.user
     const currBoard = value.currBoard
-    const [currBoardWColumns, setCurrBoardWColumns] = useState([])
-    const [boards, setBoards] = useState([])
     const [openMenu, setOpenMenu] = useState(false)
     const [alertOpen, setAlertOpen] = useState(false)
     const menuRef = useRef(null)
@@ -42,25 +40,6 @@ const Navbar = () => {
         }
     }, [])
 
-    useEffect(() => {
-        if (currBoard && currBoard.id) {
-            fetchBoard()
-        }
-    }, []);
-
-    const fetchBoard = async () => {
-        try {
-            const response = await axios.request({
-                url: `${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/board/board/${currBoard?.id}`,
-                method: "get",
-            })
-            setCurrBoardWColumns(response.data.columns)
-        } catch (error) {
-            console.log(error);
-        }
-        // setColumns(response.data.columns)
-    }
-
 
     const handleDelete = async () => {
         try {
@@ -68,7 +47,6 @@ const Navbar = () => {
                 url: `${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/board/${currBoard?.id}`,
                 method: "delete"
             })
-            console.log(response);
             value.setCurrBoard(null);
             value.verifyToken(localStorage.getItem("token") || "")
             setAlertOpen(false)
@@ -83,7 +61,7 @@ const Navbar = () => {
                 <img src="./logo.svg" alt="" className='w-10 h-10' />
                 <h1 className='text-4xl font-bold tracking-tight'>EaseTasks</h1>
             </div>
-            <div className='flex text-2xl text-neutral-100 font-bold flex-grow items-center justify-between px-8'>
+            <div className='flex text-2xl dark:text-neutral-100 font-bold flex-grow items-center justify-between px-8'>
                 {currBoard?.title}
             </div>
             <div className='flex items-center'>
@@ -93,10 +71,11 @@ const Navbar = () => {
                     <div className={`absolute rounded-md w-32 bg-slate-900 text-white top-12 right-2 ${openMenu ? "flex flex-col" : "hidden"}`}>
                         {/* Trigger Edit Board Dialog */}
                         <AddBoard
-                            boardId={currBoard?.id}
+                            board={currBoard}
                             existingTitle={currBoard?.title}
-                            existingColumns={currBoardWColumns}
+                            existingColumns={currBoard?.columns}
                             isEditMode={true}
+                            buttonTitle='Edit Board'
                         />
                         <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
                             <AlertDialogTrigger asChild>
