@@ -47,7 +47,8 @@ const Navbar = () => {
                 url: `${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/board/${currBoard?.id}`,
                 method: "delete"
             })
-            value.setCurrBoard(null);
+            value.setCurrBoard(user?.boards[0])
+            // value.setCurrBoard(null);
             value.verifyToken(localStorage.getItem("token") || "")
             setAlertOpen(false)
         } catch (error) {

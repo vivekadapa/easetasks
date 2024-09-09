@@ -44,3 +44,38 @@ export const createCard = async (req: Request, res: Response) => {
         res.status(500).json({ error: 'Failed to create card' });
     }
 };
+
+export const updateCard = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params; // Get the card ID from the request parameters
+        const { priority, columnId, subtasks } = req.body; // Get the updated data from the request body
+
+        const card = await prisma.card.findUnique({
+            where: { id: id },
+            include: { subtasks: true },
+        });
+
+        if (!card) {
+            return res.status(404).json({ error: 'Card not found' });
+        }
+
+        // Update the card with the provided data
+        const updatedCard = await prisma.card.update({
+            where: { id: id },
+            data: {
+                priority: priority || card.priority, // Update priority if provided
+                columnId: columnId || card.columnId, // Update column ID (status) if provided
+                subtasks: {
+                    // If subtasks are provided, update them
+                    deleteMany: { parentCardId: id }, // Delete existing subtasks for the card
+                    create: subtasks || [], // Create new subtasks
+                },
+            },
+        });
+
+        return res.json(updatedCard);
+    } catch (error) {
+        console.error("Error updating card:", error);
+        return res.status(500).json({ error: 'An error occurred while updating the card' });
+    }
+};

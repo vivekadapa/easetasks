@@ -25,6 +25,7 @@ const Sidebar = () => {
 
 
 
+
     const handleBoardChange = (e: React.MouseEvent<HTMLButtonElement>, id: string) => {
         const selectedBoard = user?.boards.find((board: any) => board.id === id);
         if (selectedBoard) {

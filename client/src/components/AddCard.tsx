@@ -28,7 +28,7 @@ import { useAuth } from '@/context/AuthProvider';
 import axios from 'axios';
 
 
-const AddCard = ({ column }: any) => {
+const AddCard = () => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("")
     const [adding, setAdding] = useState(false);
@@ -93,6 +93,7 @@ const AddCard = ({ column }: any) => {
             })
             console.log(board?.title + " inside add card")
             const updatedBoardResponse = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/board/board/${board?.id}`);
+            setSubtasks([])
             console.log("Updated Board Response:", updatedBoardResponse.data);
             value.setCurrBoard(updatedBoardResponse.data);
             setDialogOpen(false)

@@ -1,7 +1,7 @@
 import express from 'express'
 import cron from 'node-cron'
 import axios from 'axios'
-import { authRouter, boardRouter, columnRouter, cardRouter } from './routes'
+import { authRouter, boardRouter, columnRouter, cardRouter, subCardRouter } from './routes'
 import cors from "cors";
 import dotenv from 'dotenv'
 
@@ -17,22 +17,31 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/board', boardRouter)
 app.use('/api/v1/column', columnRouter)
 app.use('/api/v1/card', cardRouter)
+app.use('/api/v1/subcard', subCardRouter)
 
 
+cron.schedule('* * * * *', async () => {
+    try {
+        const response = await axios.request({
+            method: "get",
+            url: `https://talkies-frontend.onrender.com/`
+        })
+        const response1 = await axios.request({
+            method: "get",
+            url: `https://talkies-1.onrender.com/`
+        })
+        const response2 = await axios.request({
+            method: "get",
+            url: `https://medicare-server-2u9y.onrender.com/user/getAllUsers`
+        })
 
-// cron.schedule('* * * * *', async () => {
-//     try {
-//         const response = await axios.request({
-//             method: "get",
-//             url: `https://talkies-frontend.onrender.com/`
-//         })
-//         if (response.status == 200) {
-//             console.log("talkies server is awake")
-//         }
-//     } catch (error) {
-//         console.log(error)
-//     }
-// })
+        if (response.status == 200 || response1.status == 200) {
+            console.log("talkies server is awake")
+        }
+    } catch (error) {
+        console.log(error)
+    }
+})
 
 
 // dbConnect()

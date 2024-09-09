@@ -7,7 +7,7 @@ import Loader from './Loader';
 
 //@ts-ignore
 
-const Column = ({ title, headingColor, column, cards }) => {
+const Column = ({ title, headingColor, column, cards, updateCardInBoard }) => {
   if (!column) {
     return null;
   }
@@ -19,12 +19,9 @@ const Column = ({ title, headingColor, column, cards }) => {
   };
   //@ts-ignore
 
-  const handleDragEnd = (e) => {
+  const handleDragEnd = async (e: any) => {
     const cardId = e.dataTransfer.getData("cardId");
-
     setActive(false);
-    //@ts-ignore
-
     clearHighlights();
 
     const indicators = getIndicators();
@@ -34,7 +31,6 @@ const Column = ({ title, headingColor, column, cards }) => {
 
     if (before !== cardId) {
       let copy = [...cards];
-
       let cardToTransfer = copy.find((c) => c.id === cardId);
       if (!cardToTransfer) return;
       cardToTransfer = { ...cardToTransfer, column };
@@ -42,18 +38,27 @@ const Column = ({ title, headingColor, column, cards }) => {
       copy = copy.filter((c) => c.id !== cardId);
 
       const moveToBack = before === "-1";
-
+      let insertAtIndex
       if (moveToBack) {
         copy.push(cardToTransfer);
       } else {
-        const insertAtIndex = copy.findIndex((el) => el.id === before);
+        insertAtIndex = copy.findIndex((el) => el.id === before);
         if (insertAtIndex === undefined) return;
 
         copy.splice(insertAtIndex, 0, cardToTransfer);
       }
 
-      //uncomment this
-      // setCards(copy);
+      // Update card on the server after it's moved
+      try {
+        const response = await axios.put(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/card/${cardToTransfer.id}`, {
+          columnId: column, // Update column ID
+          order: insertAtIndex !== undefined ? insertAtIndex : copy.length - 1, // Update order if needed
+        });
+        const updatedCard = response.data;
+        updateCardInBoard(updatedCard); // Call the updateCardInBoard function
+      } catch (error) {
+        console.error('Error updating card:', error);
+      }
     }
   };
 
@@ -141,7 +146,7 @@ const Column = ({ title, headingColor, column, cards }) => {
       >
 
         {cards && cards.length > 0 && cards.map((c: any) => {
-          return <Card key={c.id} priority={c.priority} title={c.title} id={c.id} column={column} handleDragStart={handleDragStart} />;
+          return <Card key={c.id} priority={c.priority} title={c.title} id={c.id} column={column} card={c} handleDragStart={handleDragStart} updateCardInBoard={updateCardInBoard} />;
         })}
         <DropIndicator beforeId={null} column={column} />
         {/* <AddCard column={column} setCards={setCards} /> */}

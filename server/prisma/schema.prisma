@@ -51,9 +51,9 @@ model Card {
 model Subcard {
   id           String @id @default(auto()) @map("_id") @db.ObjectId
   title        String
-  // order        Int
   parentCardId String @db.ObjectId
   parentCard   Card   @relation("CardSubtasks", fields: [parentCardId], references: [id], onDelete: Cascade)
+  isComplete   Boolean @default(false) 
 }
 
 model Invitation {
