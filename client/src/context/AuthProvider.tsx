@@ -1,5 +1,3 @@
-import axios from "axios";
-import { Loader } from "lucide-react";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRenderCount } from "@uidotdev/usehooks";
@@ -79,7 +77,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             verifyToken(token);
         }
 
-    }, [currBoard,token]);
+    }, [currBoard, token]);
 
     const verifyToken = async (token: string) => {
         try {
@@ -147,10 +145,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setCards,
     };
 
-    return (
-        <AuthContext.Provider value={value} >
-            {children}
-        </AuthContext.Provider >
+    //@ts-ignore
+    return (<AuthContext.Provider value={value} >
+        {children}
+    </AuthContext.Provider >
     );
 };
 

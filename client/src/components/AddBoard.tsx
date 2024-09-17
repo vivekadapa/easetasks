@@ -1,5 +1,4 @@
 import React, { ChangeEvent, useState, useEffect } from 'react';
-import { motion } from "framer-motion";
 import { FiPlus } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,7 +8,6 @@ import {
     DialogTitle,
     DialogTrigger,
     DialogFooter,
-    DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

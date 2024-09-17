@@ -1,11 +1,10 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, useState } from 'react'
 import { motion } from "framer-motion";
-import { FiPlus, FiTrash } from "react-icons/fi";
+import { FiPlus } from "react-icons/fi";
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -34,7 +33,7 @@ const AddCard = () => {
     const [adding, setAdding] = useState(false);
     // const [columns, setColumns] = useState([])
     const value = useAuth()
-    const token = localStorage.getItem("token") || ""
+    // const token = localStorage.getItem("token") || ""
     const board = value.currBoard;
 
     const [dialogOpen, setDialogOpen] = useState(false)
@@ -81,8 +80,10 @@ const AddCard = () => {
 
         // Determine the order for the new card
         let newOrder = 1; // Default order in case the column has no cards
+        //@ts-ignore
         if (selectedColumn && selectedColumn?.cards.length > 0) {
             // Get the highest order value from the existing cards in the selected column
+            //@ts-ignore
             const highestOrder = Math.max(...selectedColumn?.cards?.map((card: any) => card.order));
             newOrder = highestOrder + 1;
         }
@@ -93,7 +94,7 @@ const AddCard = () => {
             priority,
             columnId: status,
             subtasks,
-            order:newOrder
+            order: newOrder
         }
 
         try {

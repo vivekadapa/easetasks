@@ -6,10 +6,22 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthProvider';
+// import { Card, CardContent, CardTitle } from '@/components/ui/card';
+import { TbProgress } from "react-icons/tb";
+import { Bell, Grip, Users } from 'lucide-react';
+// import { once } from 'events';
 
 type props = {
   isLogin: boolean
 }
+
+const featureCards = [
+  { title: "Collaborate with Teams", description: "Invite team members and work together seamlessly on projects.", icon: <Users className='w-32 h-32 mx-auto' /> },
+  { title: "Track Task Progress", description: "Monitor tasks and subtasks with ease using the Kanban interface.", icon: <TbProgress className='w-32 h-32 mx-auto' /> },
+  { title: "Drag-and-Drop Interface", description: "Easily manage tasks and columns with intuitive drag-and-drop.", icon: <Grip className='w-32 h-32 mx-auto' /> },
+  { title: "Real-Time Notifications", description: "Stay updated with real-time task and project notifications.", icon: <Bell className='w-32 h-32 mx-auto' /> }
+];
+
 
 
 const AuthComponent = ({ isLogin }: props) => {
@@ -24,7 +36,7 @@ const AuthComponent = ({ isLogin }: props) => {
     e.preventDefault();
     setError('');
 
-    const endpoint = isLogin ? 'login' : 'register';
+    // const endpoint = isLogin ? 'login' : 'register';
 
     try {
       if (isLogin) {
@@ -49,13 +61,6 @@ const AuthComponent = ({ isLogin }: props) => {
       console.error(err);
       setError('An error occurred during authentication');
     }
-    // const response = await value.login(email, password)
-    // try {
-
-    // } catch (err) {
-    //   console.log(err)
-    //   setError('Network error');
-    // }
   };
 
   React.useEffect(() => {
@@ -75,19 +80,16 @@ const AuthComponent = ({ isLogin }: props) => {
         >
           <h1 className="flex items-center gap-4 text-4xl font-bold mb-4">
             <motion.div
-              animate={{
-                y: [0, -10, 0],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                repeatType: "reverse",
-              }}
+              initial={{ rotate: 0 }}
+              animate={{ rotate: 180 }}
+              transition={{ duration: 2, repeat: 0 }}
             >
-              <img src="./logo.svg" alt="Task management illustration" className="shadow-lg" />
+              <img src="./logo.svg" alt="Task management illustration" className="shadow-lg w-8 h-8" />
             </motion.div>
-            Ease Tasks</h1>
+            Ease Tasks
+          </h1>
         </motion.div>
+
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -96,6 +98,25 @@ const AuthComponent = ({ isLogin }: props) => {
         >
           Simplify your workflow with our intuitive Kanban boards
         </motion.p>
+
+        {/* Animated Feature Cards */}
+        <div className="mt-8 text-center grid grid-cols-2 px-4 gap-4 w-full">
+          {featureCards.map((feature, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.2, duration: 0.5 }}
+              className="bg-neutral-900/80 p-4 rounded-lg shadow-lg"
+            >
+
+              {feature.icon}
+              {/* <img src={`./${feature.icon}`} alt={feature.title} className="w-12 h-12 mb-3" /> */}
+              <CardTitle className="text-lg ">{feature.title}</CardTitle>
+              <p className="text-sm text-neutral-400">{feature.description}</p>
+            </motion.div>
+          ))}
+        </div>
       </div>
       <div className='h-screen p-[0.05px] bg-slate-500'>
 

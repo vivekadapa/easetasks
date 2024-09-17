@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Button } from './ui/button'
-import { Plus } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import AddCard from './AddCard';
 import { useAuth } from '@/context/AuthProvider';
@@ -17,7 +16,21 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+} from "@/components/ui/avatar"
 import AddBoard from './AddBoard';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
 
 const Navbar = () => {
     const navigate = useNavigate();
@@ -30,7 +43,8 @@ const Navbar = () => {
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+            //@ts-ignore
+            if (menuRef.current && !menuRef.current?.contains(event.target as Node)) {
                 setOpenMenu(false);
             }
         };
@@ -66,7 +80,7 @@ const Navbar = () => {
             <div className='flex text-2xl dark:text-neutral-100 font-bold flex-grow items-center justify-between px-8'>
                 {currBoard?.title}
             </div>
-            <div className='flex items-center'>
+            <div className='flex gap-4 items-center'>
                 <AddCard />
                 <button className={`relative ${!currBoard ? "hidden" : "block"}`} ref={menuRef} onClick={() => setOpenMenu((prev) => !prev)}>
                     <BsThreeDotsVertical className='w-8 h-8 p-1 hover:bg-[#e0cece44] cursor-pointer rounded-full' />
@@ -98,6 +112,23 @@ const Navbar = () => {
                         </AlertDialog>
                     </div>
                 </button>
+                <DropdownMenu>
+                    <DropdownMenuTrigger>
+                        <Avatar>
+                            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                            <AvatarFallback>CN</AvatarFallback>
+                        </Avatar>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => value.logout()} className='cursor-pointer'>Logout</DropdownMenuItem>
+                        {/* <DropdownMenuItem>Billing</DropdownMenuItem>
+                        <DropdownMenuItem>Team</DropdownMenuItem>
+                        <DropdownMenuItem>Subscription</DropdownMenuItem> */}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+
             </div>
         </div>
     )

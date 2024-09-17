@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import { useState } from 'react'
 import {
     Dialog,
     DialogContent,
     DialogFooter,
     DialogHeader,
-    DialogTitle,
-    DialogTrigger
+    DialogTitle
 } from "@/components/ui/dialog";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import {
@@ -24,7 +23,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 const CardDetails = ({ card, column, board, updateCardInBoard, dialogOpen, setDialogOpen }: any) => {
 
     const value = useAuth();
-    const { currBoard, setCurrBoard } = value;
+    const { currBoard } = value;
     const [priority, setPriority] = useState(card?.priority);
     const [status, setStatus] = useState(column?.id);
     const [subtasks, setSubtasks] = useState(card?.subtasks || []);

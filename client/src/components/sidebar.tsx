@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { ModeToggle } from './ui/mode-toggle'
-import { Link } from 'react-router-dom'
 import { Button } from './ui/button'
 import { Eye } from 'lucide-react';
 import { EyeOff } from 'lucide-react';
@@ -8,7 +7,6 @@ import { useState } from 'react';
 import AddBoard from './AddBoard';
 import { MdOutlineSpaceDashboard } from "react-icons/md";
 import { useAuth } from '@/context/AuthProvider';
-import axios from 'axios';
 import Loader from './Loader';
 
 
