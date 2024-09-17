@@ -100,6 +100,7 @@ export const verify = async (req: Request, res: Response) => {
                 }
                 res.json({ data: user });
             } catch (error) {
+                console.log(error)
                 res.status(500).json({ message: 'Server error' });
             }
         }

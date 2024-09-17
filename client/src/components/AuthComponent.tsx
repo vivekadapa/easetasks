@@ -18,33 +18,51 @@ const AuthComponent = ({ isLogin }: props) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login, user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
     const endpoint = isLogin ? 'login' : 'register';
-    // const response = await value.login(email, password)
-    try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/auth/${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
 
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('token', data.token);
-        navigate('/');
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || 'An error occurred');
+    try {
+      if (isLogin) {
+        await login(email, password)
+      }
+      else {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          await login(email, password); // Use the login function after successful registration
+        } else {
+          const errorData = await response.json();
+          setError(errorData.message || 'An error occurred');
+        }
       }
     } catch (err) {
-      console.log(err)
-      setError('Network error');
+      console.error(err);
+      setError('An error occurred during authentication');
     }
+    // const response = await value.login(email, password)
+    // try {
+
+    // } catch (err) {
+    //   console.log(err)
+    //   setError('Network error');
+    // }
   };
+
+  React.useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   return (
 

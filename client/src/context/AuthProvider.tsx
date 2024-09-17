@@ -74,11 +74,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     console.log("Render Count " + renderCount)
     const token = localStorage.getItem('token');
     useEffect(() => {
+        console.log(token)
         if (token) {
             verifyToken(token);
         }
 
-    }, [currBoard, token]);
+    }, [currBoard,token]);
 
     const verifyToken = async (token: string) => {
         try {

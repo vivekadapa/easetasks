@@ -77,12 +77,23 @@ const AddCard = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const selectedColumn = board?.columns.find((column: any) => column.id === status);
+
+        // Determine the order for the new card
+        let newOrder = 1; // Default order in case the column has no cards
+        if (selectedColumn && selectedColumn?.cards.length > 0) {
+            // Get the highest order value from the existing cards in the selected column
+            const highestOrder = Math.max(...selectedColumn?.cards?.map((card: any) => card.order));
+            newOrder = highestOrder + 1;
+        }
+
         const body = {
             title,
             description,
             priority,
             columnId: status,
-            subtasks
+            subtasks,
+            order:newOrder
         }
 
         try {

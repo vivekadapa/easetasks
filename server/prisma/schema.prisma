@@ -31,7 +31,7 @@ model Board {
 model Column {
   id      String @id @default(auto()) @map("_id") @db.ObjectId
   title   String
-  order   Int
+  order   Int?
   boardId String @db.ObjectId
   board   Board  @relation(name: "BoardToColumn", fields: [boardId], references: [id], onDelete: Cascade)
   cards   Card[] @relation(name: "ColumnToCard")
@@ -41,7 +41,7 @@ model Card {
   id       String    @id @default(auto()) @map("_id") @db.ObjectId
   title    String
   content  String?
-  // order    Int
+  order    Int?
   priority String
   columnId String    @db.ObjectId
   column   Column    @relation(name: "ColumnToCard", fields: [columnId], references: [id], onDelete: Cascade)
@@ -49,11 +49,11 @@ model Card {
 }
 
 model Subcard {
-  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
   title        String
-  parentCardId String @db.ObjectId
-  parentCard   Card   @relation("CardSubtasks", fields: [parentCardId], references: [id], onDelete: Cascade)
-  isComplete   Boolean @default(false) 
+  parentCardId String  @db.ObjectId
+  parentCard   Card    @relation("CardSubtasks", fields: [parentCardId], references: [id], onDelete: Cascade)
+  isComplete   Boolean @default(false)
 }
 
 model Invitation {

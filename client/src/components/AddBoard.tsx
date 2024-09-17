@@ -151,6 +151,7 @@ const AddBoard: React.FC<AddBoardProps> = ({ board, existingTitle, existingColum
             }
             setNewColumns([])
             console.log("After adding board " + JSON.stringify(response.data, null, 2))
+            setTitle("")
             value.setCurrBoard(response.data);
 
             setOpen(false);

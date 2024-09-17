@@ -16,6 +16,7 @@ export const createCard = async (req: Request, res: Response) => {
                 content: description,
                 priority: priority,
                 columnId: columnId,
+                order,
                 subtasks: {
                     create: subtasks.map((s: any) => {
                         return {
@@ -33,9 +34,9 @@ export const createCard = async (req: Request, res: Response) => {
             include: {
                 subtasks: true
             },
-            // orderBy: {
-            //     order: 'asc'
-            // }
+            orderBy: {
+                order: 'asc'
+            }
         });
 
         res.status(201).json(allCards);
@@ -59,20 +60,18 @@ export const updateCard = async (req: Request, res: Response) => {
             return res.status(404).json({ error: 'Card not found' });
         }
 
-        // Update the card with the provided data
         const updatedCard = await prisma.card.update({
             where: { id: id },
             data: {
-                priority: priority || card.priority, // Update priority if provided
-                columnId: columnId || card.columnId, // Update column ID (status) if provided
+                priority: priority || card.priority,
+                columnId: columnId || card.columnId,
                 subtasks: {
-                    // If subtasks are provided, update them
-                    deleteMany: { parentCardId: id }, // Delete existing subtasks for the card
-                    create: subtasks || [], // Create new subtasks
+                    deleteMany: { parentCardId: id },
+                    create: subtasks || [],
                 },
             },
         });
-
+        console.log(updatedCard);
         return res.json(updatedCard);
     } catch (error) {
         console.error("Error updating card:", error);
