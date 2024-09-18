@@ -5,6 +5,7 @@ import { authRouter, boardRouter, columnRouter, cardRouter, subCardRouter } from
 import cors from "cors";
 import dotenv from 'dotenv'
 import auth from './middleware/auth'
+import { Request, Response } from 'express';
 
 
 dotenv.config()
@@ -13,7 +14,7 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
-app.get('/readiness', (req, res) => {
+app.get('/readiness', (req: Request, res: Response) => {
     res.status(200).json("Server is awake")
 })
 
