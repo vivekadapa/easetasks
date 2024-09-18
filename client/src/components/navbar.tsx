@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button } from './ui/button'
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import AddCard from './AddCard';
 import { useAuth } from '@/context/AuthProvider';
 import { BsThreeDotsVertical } from "react-icons/bs";
@@ -33,7 +33,7 @@ import {
 
 
 const Navbar = () => {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const value = useAuth()
     const user = value.user
     const currBoard = value.currBoard
@@ -59,7 +59,7 @@ const Navbar = () => {
 
     const handleDelete = async () => {
         try {
-            const response = await axios.request({
+            await axios.request({
                 url: `${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/board/${currBoard?.id}`,
                 method: "delete",
                 headers: {

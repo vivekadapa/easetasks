@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { FiEdit } from "react-icons/fi";
+// import { motion } from 'framer-motion';
+// import { FiEdit } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -8,7 +8,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  // DialogTrigger
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -77,7 +77,7 @@ const EditCard = ({ card, board, updateCardInBoard, dialogOpen, setDialogOpen }:
 
     try {
       // Make API request to update the card
-      const response = await axios.put(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/card/${card.id}`, body, {
+      await axios.put(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/card/${card.id}`, body, {
         headers: {
           Authorization: `Bearer ${token}`
         }

@@ -14,7 +14,7 @@ const DropIndicator = ({ beforeId, column }: any) => {
   );
 };
 
-const Card = ({ title, id, column, handleDragStart, priority, card, board, updateCardInBoard }: any) => {
+const Card = ({ title, id, column, card, board, updateCardInBoard }: any) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const completedSubtasks = card.subtasks.filter((s: any) => s.isComplete == true)
 

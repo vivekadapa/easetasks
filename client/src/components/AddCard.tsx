@@ -31,6 +31,7 @@ const AddCard = () => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("")
     const [adding, setAdding] = useState(false);
+    console.log(adding)
     // const [columns, setColumns] = useState([])
     const value = useAuth()
     const token = localStorage.getItem("token") || ""
@@ -60,7 +61,7 @@ const AddCard = () => {
         if (subtasks.length == 1) {
             setError('')
         }
-        const newInputs = subtasks.filter((i, ind) => ind != index);
+        const newInputs = subtasks.filter((_i, ind) => ind != index);
         setSubtasks(newInputs);
     }
 
@@ -98,7 +99,7 @@ const AddCard = () => {
         }
 
         try {
-            const response = await axios.request({
+            await axios.request({
                 url: `${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/card`,
                 method: "post",
                 data: body,

@@ -20,7 +20,7 @@ import { Label } from './ui/label';
 import { useAuth } from '@/context/AuthProvider';
 import { Checkbox } from "@/components/ui/checkbox";
 
-const CardDetails = ({ card, column, board, updateCardInBoard, dialogOpen, setDialogOpen }: any) => {
+const CardDetails = ({ card, column, updateCardInBoard, dialogOpen, setDialogOpen }: any) => {
 
     const value = useAuth();
     const { currBoard } = value;
@@ -70,7 +70,7 @@ const CardDetails = ({ card, column, board, updateCardInBoard, dialogOpen, setDi
             });
 
             if (response.ok) {
-                const updatedCard = await response.json();
+                // const updatedCard = await response.json();
                 updateCardInBoard(currBoard);
                 setDialogOpen(false);
             }

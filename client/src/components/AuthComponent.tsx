@@ -50,7 +50,7 @@ const AuthComponent = ({ isLogin }: props) => {
         });
 
         if (response.ok) {
-          const data = await response.json();
+          await response.json();
           await login(email, password); // Use the login function after successful registration
         } else {
           const errorData = await response.json();
