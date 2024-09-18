@@ -9,7 +9,7 @@
 <h2>💻 Built with</h2>
 
 Technologies used in the project:
-
+*   React
 *   Typescript
 *   Node
 *   MongoDB
