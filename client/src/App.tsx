@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { ThemeProvider } from "./context/ThemeProvider"
-import Layout from "./components/Layout"
+import Layout from "./components/layout"
 // import Home from './pages/Home'
 import { CustomKanban } from "./pages/Home"
 import AuthComponent from "./components/AuthComponent"
