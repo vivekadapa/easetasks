@@ -93,7 +93,11 @@ const AddBoard: React.FC<AddBoardProps> = ({ board, existingTitle, existingColum
         try {
 
             await axios.delete(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/column/${columnToDelete}`);
-            const updatedBoardResponse = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/board/board/${board.id}`);
+            const updatedBoardResponse = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/board/board/${board.id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             console.log(updatedBoardResponse.data)
             value.setCurrBoard(updatedBoardResponse.data);
 

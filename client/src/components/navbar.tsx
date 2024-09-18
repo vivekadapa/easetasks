@@ -41,6 +41,8 @@ const Navbar = () => {
     const [alertOpen, setAlertOpen] = useState(false)
     const menuRef = useRef(null)
 
+    const token = localStorage.getItem("token")
+
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             //@ts-ignore
@@ -59,7 +61,10 @@ const Navbar = () => {
         try {
             const response = await axios.request({
                 url: `${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/board/${currBoard?.id}`,
-                method: "delete"
+                method: "delete",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             })
             console.log(user?.boards)
             // value.setCurrBoard(user?.boards[0])

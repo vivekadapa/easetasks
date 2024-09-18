@@ -28,6 +28,8 @@ const CardDetails = ({ card, column, board, updateCardInBoard, dialogOpen, setDi
     const [status, setStatus] = useState(column?.id);
     const [subtasks, setSubtasks] = useState(card?.subtasks || []);
 
+    const token = localStorage.getItem("token")
+
     const completedSubtasksCount = subtasks.filter((subtask: any) => subtask.isComplete).length;
 
     const handleSubtaskChange = async (index: number, checked: boolean) => {
@@ -58,6 +60,7 @@ const CardDetails = ({ card, column, board, updateCardInBoard, dialogOpen, setDi
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     priority,

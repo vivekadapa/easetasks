@@ -33,7 +33,7 @@ const AddCard = () => {
     const [adding, setAdding] = useState(false);
     // const [columns, setColumns] = useState([])
     const value = useAuth()
-    // const token = localStorage.getItem("token") || ""
+    const token = localStorage.getItem("token") || ""
     const board = value.currBoard;
 
     const [dialogOpen, setDialogOpen] = useState(false)
@@ -101,10 +101,17 @@ const AddCard = () => {
             const response = await axios.request({
                 url: `${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/card`,
                 method: "post",
-                data: body
+                data: body,
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             })
             console.log(board?.title + " inside add card")
-            const updatedBoardResponse = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/board/board/${board?.id}`);
+            const updatedBoardResponse = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/board/board/${board?.id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             setSubtasks([])
             console.log("Updated Board Response:", updatedBoardResponse.data);
             value.setCurrBoard(updatedBoardResponse.data);

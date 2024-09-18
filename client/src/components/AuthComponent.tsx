@@ -72,7 +72,7 @@ const AuthComponent = ({ isLogin }: props) => {
   return (
 
     <div className='min-h-screen flex justify-center items-center'>
-      <div className="w-1/2 h-full flex border-r-[1px] flex-col items-center justify-center text-white">
+      <div className="max-[735px]:hidden w-1/2 overflow-y-auto min-h-full flex border-r-[1px] border-slate-500 flex-col items-center justify-center text-white">
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -94,13 +94,13 @@ const AuthComponent = ({ isLogin }: props) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.5 }}
-          className="mt-4 text-xl"
+          className="mt-4 text-xl text-center"
         >
           Simplify your workflow with our intuitive Kanban boards
         </motion.p>
 
         {/* Animated Feature Cards */}
-        <div className="mt-8 text-center grid grid-cols-2 px-4 gap-4 w-full">
+        <div className="mt-8 text-center grid grid-cols-2 max-[1100px]:grid-cols-1 px-4 gap-4 w-full">
           {featureCards.map((feature, index) => (
             <motion.div
               key={index}
@@ -118,7 +118,7 @@ const AuthComponent = ({ isLogin }: props) => {
           ))}
         </div>
       </div>
-      <div className='h-screen p-[0.05px] bg-slate-500'>
+      <div className='h-screen px-[0.05px] bg-slate-500'>
 
       </div>
       <Card className="h-full w-[350px] mx-auto mt-10">

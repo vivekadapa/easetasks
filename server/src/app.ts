@@ -4,6 +4,7 @@ import axios from 'axios'
 import { authRouter, boardRouter, columnRouter, cardRouter, subCardRouter } from './routes'
 import cors from "cors";
 import dotenv from 'dotenv'
+import auth from './middleware/auth'
 
 
 dotenv.config()
@@ -14,10 +15,10 @@ app.use(cors())
 
 
 app.use('/api/v1/auth', authRouter);
-app.use('/api/v1/board', boardRouter)
-app.use('/api/v1/column', columnRouter)
-app.use('/api/v1/card', cardRouter)
-app.use('/api/v1/subcard', subCardRouter)
+app.use('/api/v1/board', auth, boardRouter)
+app.use('/api/v1/column', auth, columnRouter)
+app.use('/api/v1/card', auth, cardRouter)
+app.use('/api/v1/subcard', auth, subCardRouter)
 
 
 cron.schedule('* * * * *', async () => {

@@ -143,6 +143,7 @@ const Board = () => {
   const value = useAuth();
   const board = value.currBoard;
   console.log(activeId)
+  const token = localStorage.getItem("token")
   useEffect(() => {
     if (board && board.columns) {
       setColumns(board?.columns);
@@ -151,7 +152,11 @@ const Board = () => {
 
   const updateCardInBoard = async (currBoard: any) => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/board/board/${currBoard?.id}`);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/board/board/${currBoard?.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       value.setCurrBoard(response.data);
     } catch (error) {
       console.error('Error updating card in board:', error);
@@ -224,9 +229,9 @@ const Board = () => {
             }
           </SortableContext>
         </DndContext>
-      </div>
-      <div className='flex mt-8 w-72 rounded-xl justify-center items-center max-h-full hover:bg-gray-100 dark:hover:bg-gray-500 cursor-pointer px-8'>
-        <AddBoard board={board} existingTitle={board?.title} existingColumns={columns} isEditMode={true} buttonTitle='Add Column' />
+        <div className='flex mt-8 w-72 rounded-xl justify-center items-center max-h-full hover:bg-gray-100 dark:hover:bg-gray-500 cursor-pointer px-8'>
+          <AddBoard board={board} existingTitle={board?.title} existingColumns={columns} isEditMode={true} buttonTitle='Add Column' />
+        </div>
       </div>
     </div>
   );
