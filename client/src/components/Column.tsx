@@ -38,7 +38,7 @@ const Column = ({ title, headingColor, column, cards, updateCardInBoard }) => {
         </span>
       </div>
       <div
-        className={`min-h-full gap-4 px-2 max-h-96 overflow-y-auto scrollbar-hide w-full transition-colors ${isDragging ? "bg-neutral-800/50" : "bg-neutral-800/0"
+        className={`min-h-full gap-4 px-5 max-h-96 overflow-y-auto scrollbar-hide w-full transition-colors ${isDragging ? "bg-neutral-800/50" : "bg-neutral-800/0"
           }`}
       >
         <SortableContext items={cards.map((c: any) => c.id)}>
