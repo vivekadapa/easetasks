@@ -13,6 +13,10 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
+app.get('/readiness', (req, res) => {
+    res.status(200).json("Server is awake")
+})
+
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/board', auth, boardRouter)
