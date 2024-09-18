@@ -1,6 +1,6 @@
 import express from 'express'
-import cron from 'node-cron'
-import axios from 'axios'
+// import cron from 'node-cron'
+// import axios from 'axios'
 import { authRouter, boardRouter, columnRouter, cardRouter, subCardRouter } from './routes'
 import cors from "cors";
 import dotenv from 'dotenv'
