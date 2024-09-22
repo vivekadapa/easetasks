@@ -7,7 +7,6 @@ import { useState } from 'react';
 import AddBoard from './AddBoard';
 import { MdOutlineSpaceDashboard } from "react-icons/md";
 import { useAuth } from '@/context/AuthProvider';
-import Loader from './Loader';
 
 
 
