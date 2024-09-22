@@ -19,6 +19,9 @@ import {
 import { Label } from './ui/label';
 import { useAuth } from '@/context/AuthProvider';
 import { Checkbox } from "@/components/ui/checkbox";
+import loader from '../assets/loader.svg';
+import { Button } from './ui/button';
+
 
 const CardDetails = ({ card, column, updateCardInBoard, dialogOpen, setDialogOpen }: any) => {
 
@@ -27,28 +30,33 @@ const CardDetails = ({ card, column, updateCardInBoard, dialogOpen, setDialogOpe
     const [priority, setPriority] = useState(card?.priority);
     const [status, setStatus] = useState(column?.id);
     const [subtasks, setSubtasks] = useState(card?.subtasks || []);
-
+    const [loading, setLoading] = useState(false);
+    const [editLoading, setEditLoading] = useState(false);
     const token = localStorage.getItem("token")
 
     const completedSubtasksCount = subtasks.filter((subtask: any) => subtask.isComplete).length;
 
     const handleSubtaskChange = async (index: number, checked: boolean) => {
+        setLoading(true)
         try {
             const response = await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/subcard/${subtasks[index].id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({ completed: checked }),
             });
 
             if (!response.ok) {
+                setLoading(false)
                 throw new Error('Failed to update subtask status');
             }
 
             const updatedSubtasks = [...card?.subtasks];
             updatedSubtasks[index].isComplete = checked;
             setSubtasks(updatedSubtasks);
+            setLoading(false)
         } catch (error) {
             console.error('Error updating subtask status:', error);
         }
@@ -56,6 +64,7 @@ const CardDetails = ({ card, column, updateCardInBoard, dialogOpen, setDialogOpe
 
     const handleUpdateCard = async () => {
         try {
+            setEditLoading(true)
             const response = await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/card/${card.id}`, {
                 method: 'PUT',
                 headers: {
@@ -71,13 +80,16 @@ const CardDetails = ({ card, column, updateCardInBoard, dialogOpen, setDialogOpe
 
             if (response.ok) {
                 // const updatedCard = await response.json();
+                setEditLoading(false);
                 updateCardInBoard(currBoard);
                 setDialogOpen(false);
             }
             if (!response.ok) {
+                setEditLoading(false);
                 throw new Error('Failed to update card');
             }
         } catch (error) {
+            setEditLoading(false);
             console.error('Error updating card:', error);
         }
     };
@@ -95,7 +107,8 @@ const CardDetails = ({ card, column, updateCardInBoard, dialogOpen, setDialogOpe
                 <div className='flex flex-col gap-2'>
                     <h1 className='font-bold'>Subtasks({completedSubtasksCount} of {card?.subtasks?.length})</h1>
                     <div className="flex flex-col gap-2 space-y-2">
-                        {subtasks?.map((subtask: any, index: number) => (
+
+                        {!loading ? subtasks?.map((subtask: any, index: number) => (
                             <div key={index} className="flex p-2 gap-4 bg-[#20212c] cursor-pointer hover:bg-[#00C9A8] hover:bg-opacity-15 items-center space-x-2">
                                 <Checkbox
                                     id={`subtask-${index}`}
@@ -109,7 +122,10 @@ const CardDetails = ({ card, column, updateCardInBoard, dialogOpen, setDialogOpe
                                     {subtask.title}
                                 </label>
                             </div>
-                        ))}
+                        )) : <div className='flex items-center justify-center'>
+                            <img src={loader} className='w-10 h-10' alt='loader' />
+                        </div>
+                        }
                     </div>
                 </div>
                 <div className='flex flex-col gap-3'>
@@ -158,7 +174,13 @@ const CardDetails = ({ card, column, updateCardInBoard, dialogOpen, setDialogOpe
                     </Select>
                 </div>
                 <DialogFooter>
-                    <button onClick={handleUpdateCard} className="bg-blue-500 text-white rounded p-2">Save Changes</button>
+                    {
+                        editLoading ? (<Button className='bg-white flex justify-center items-center'>
+                            <img src={loader} alt="" className='w-10 h-10' />
+                        </Button>) : (
+                            <Button onClick={handleUpdateCard} className="bg-[#00C9A8] text-black rounded p-2">Save changes</Button>
+                        )
+                    }
                 </DialogFooter>
             </DialogContent>
         </Dialog>

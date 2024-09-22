@@ -16,6 +16,7 @@ import { useAuth } from '@/context/AuthProvider';
 import axios from 'axios';
 import { MdOutlineSpaceDashboard } from "react-icons/md";
 import { MdOutlineDelete } from "react-icons/md";
+import Loader from '../assets/loader.svg';
 
 interface AddBoardProps {
     board?: any;
@@ -35,6 +36,7 @@ const AddBoard: React.FC<AddBoardProps> = ({ board, existingTitle, existingColum
     const [open, setOpen] = useState(false);
     const [confirmDeleteDialog, setConfirmDeleteDialog] = useState(false);
     const [columnToDelete, setColumnToDelete] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
 
     useEffect(() => {
@@ -91,7 +93,9 @@ const AddBoard: React.FC<AddBoardProps> = ({ board, existingTitle, existingColum
         if (!columnToDelete) return;
 
         try {
-
+            setConfirmDeleteDialog(false);
+            setOpen(false);
+            setLoading(true)
             await axios.delete(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/column/${columnToDelete}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -104,9 +108,7 @@ const AddBoard: React.FC<AddBoardProps> = ({ board, existingTitle, existingColum
             });
             console.log(updatedBoardResponse.data)
             value.setCurrBoard(updatedBoardResponse.data);
-
-            setConfirmDeleteDialog(false);
-            setOpen(false);
+            setLoading(false)
             setColumnToDelete(null);
         } catch (error) {
             console.error("Error deleting column:", error);
@@ -115,7 +117,7 @@ const AddBoard: React.FC<AddBoardProps> = ({ board, existingTitle, existingColum
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
+        setLoading(true)
         const oldColumnsBody = oldColumns.map((c, index) => ({
             id: c?.id,
             title: c.title,
@@ -155,6 +157,8 @@ const AddBoard: React.FC<AddBoardProps> = ({ board, existingTitle, existingColum
                 });
 
             }
+
+            setLoading(false);
             setNewColumns([])
             console.log("After adding board " + JSON.stringify(response.data, null, 2))
             setTitle("")
@@ -162,6 +166,7 @@ const AddBoard: React.FC<AddBoardProps> = ({ board, existingTitle, existingColum
 
             setOpen(false);
         } catch (error) {
+            setLoading(false)
             console.log(error);
         }
     };
@@ -239,7 +244,18 @@ const AddBoard: React.FC<AddBoardProps> = ({ board, existingTitle, existingColum
                             {isEditMode ? "Add Column" : "Add New Column"}
                         </button>
                         <DialogFooter>
-                            <Button onClick={handleSubmit} type="submit" className='bg-[#00C9A8]'>{isEditMode ? "Save changes" : "Create Board"}</Button>
+                            {
+                                loading ? (
+                                    <Button className='bg-white flex justify-center items-center'>
+                                        <img src={Loader} alt="" className='w-10 h-10' />
+                                    </Button>
+                                ) : (
+                                    <Button onClick={handleSubmit} type="submit" className='bg-[#00C9A8]'>
+                                        {isEditMode ? "Save changes" : "Create Board"}
+                                    </Button>
+                                )
+                            }
+
                         </DialogFooter>
                     </div>
 
@@ -253,7 +269,13 @@ const AddBoard: React.FC<AddBoardProps> = ({ board, existingTitle, existingColum
                     </DialogHeader>
                     <p>Are you sure you want to delete this column?</p>
                     <DialogFooter>
-                        <Button onClick={confirmDelete} className='bg-red-500'>Yes, Delete</Button>
+                        {
+                            loading ? (<Button className='bg-white flex justify-center items-center'>
+                                <img src={Loader} alt="" />
+                            </Button>) : (
+                                <Button onClick={confirmDelete} className='bg-red-500'>Yes, Delete</Button>
+                            )
+                        }
                         <Button onClick={() => setConfirmDeleteDialog(false)} variant="ghost">Cancel</Button>
                     </DialogFooter>
                 </DialogContent>

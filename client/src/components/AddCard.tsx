@@ -25,21 +25,19 @@ import {
 } from "@/components/ui/select"
 import { useAuth } from '@/context/AuthProvider';
 import axios from 'axios';
+import Loader from '../assets/loader.svg'
 
 
 const AddCard = () => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("")
-    const [adding, setAdding] = useState(false);
-    console.log(adding)
     // const [columns, setColumns] = useState([])
     const value = useAuth()
     const token = localStorage.getItem("token") || ""
     const board = value.currBoard;
 
     const [dialogOpen, setDialogOpen] = useState(false)
-
-
+    const [loading, setLoading] = useState(false);
     const [subtasks, setSubtasks] = useState<string[]>([]);
     const [priority, setPriority] = useState<string | null>(null);
     const [status, setStatus] = useState<string | null>(null);
@@ -76,7 +74,7 @@ const AddCard = () => {
     //@ts-ignore
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        setLoading(true);
         const selectedColumn = board?.columns.find((column: any) => column.id === status);
 
         // Determine the order for the new card
@@ -116,12 +114,14 @@ const AddCard = () => {
             setSubtasks([])
             console.log("Updated Board Response:", updatedBoardResponse.data);
             value.setCurrBoard(updatedBoardResponse.data);
+            setLoading(false)
             setDialogOpen(false)
         } catch (error) {
+            setLoading(false)
             console.log(error)
         }
 
-        setAdding(false);
+        // setAdding(false);
     };
 
     return (
@@ -129,7 +129,7 @@ const AddCard = () => {
             {(
                 <motion.button
                     layout
-                    onClick={() => setAdding(true)}
+                    // onClick={() => setAdding(true)}
                     className="flex items-center gap-1.5 px-3 py-1.5 text-xs dark:text-neutral-400 transition-colors hover:text-neutral-50"
                 >
                     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -230,7 +230,13 @@ const AddCard = () => {
                                 </div>
                             </div>
                             <DialogFooter>
-                                <Button type="submit" className='bg-[#00C9A8]' onClick={handleSubmit}>Save changes</Button>
+                                {
+                                    loading ? (<Button className='bg-white flex justify-center items-center'>
+                                        <img src={Loader} alt="" className='w-10 h-10' />
+                                    </Button>) : (
+                                        <Button type="submit" className='bg-[#00C9A8]' onClick={handleSubmit}>Save changes</Button>
+                                    )
+                                }
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>

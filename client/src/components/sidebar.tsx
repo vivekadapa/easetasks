@@ -40,17 +40,14 @@ const Sidebar = () => {
                     <div className='flex w-full flex-col gap-4 mt-8'>
 
                         {
-                            user && user.boards.length > 0 ? user.boards.map((board: any) => {
+                            user && user.boards.length > 0 && user.boards.map((board: any) => {
                                 return (
                                     <Button key={board?.id} onClick={(e) => handleBoardChange(e, board?.id)} variant="ghost" className={`flex w-[90%] items-center justify-start rounded-r-full pl-6 gap-2 ${board?.id === currBoard?.id ? "bg-[#156255]" : ""}`}>
                                         <MdOutlineSpaceDashboard className='w-6 h-6' />
                                         <p className='text-xl'>{board?.title}</p>
                                     </Button>
                                 )
-                            }) : <div className='mx-auto'>
-                                <Loader />
-                            </div>
-
+                            })
                         }
                         <AddBoard buttonTitle='Create new board' />
                     </div>
