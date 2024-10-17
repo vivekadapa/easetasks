@@ -50,7 +50,7 @@ app.use('/api/v1/subcard', auth, subCardRouter)
 
 // dbConnect()
 
-app.listen(3000, () => {
-    console.log("app is running at 3000")
+app.listen(3001, () => {
+    console.log("app is running at 3001")
 })
 

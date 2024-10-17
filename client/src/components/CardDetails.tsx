@@ -21,6 +21,15 @@ import { useAuth } from '@/context/AuthProvider';
 import { Checkbox } from "@/components/ui/checkbox";
 import loader from '../assets/loader.svg';
 import { Button } from './ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import axios from 'axios';
 
 
 const CardDetails = ({ card, column, updateCardInBoard, dialogOpen, setDialogOpen }: any) => {
@@ -33,6 +42,8 @@ const CardDetails = ({ card, column, updateCardInBoard, dialogOpen, setDialogOpe
     const [loading, setLoading] = useState(false);
     const [editLoading, setEditLoading] = useState(false);
     const token = localStorage.getItem("token")
+
+    const [openMenu, setOpenMenu] = useState(false)
 
     const completedSubtasksCount = subtasks.filter((subtask: any) => subtask.isComplete).length;
 
@@ -94,13 +105,30 @@ const CardDetails = ({ card, column, updateCardInBoard, dialogOpen, setDialogOpe
         }
     };
 
+
+
+    const handleCardDelete = async () => {
+        try {
+            const response = await axios.request({
+                url: `${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/card/${card.id}`,
+                method: "delete"
+            })
+            console.log(response)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     return (
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogContent className="sm:max-w-[425px] flex flex-col gap-6">
                 <DialogHeader>
                     <div className='flex justify-between items-center'>
                         <DialogTitle className='text-2xl'>{card?.title}</DialogTitle>
-                        <BsThreeDotsVertical className='h-5 w-5' />
+                        <BsThreeDotsVertical className='w-8 h-8 p-1 hover:bg-[#e0cece44] rounded-full cursor-pointer' onClick={() => setOpenMenu((prev) => !prev)} />
+                        <div className={`absolute rounded-md w-32 bg-slate-900 text-white top-14 right-2 ${openMenu ? "flex flex-col" : "hidden"}`}>
+                            <button onClick={handleCardDelete} className='p-1 font-semibold text-red-500 hover:bg-slate-900'>Delete</button>
+                        </div>
                     </div>
                 </DialogHeader>
                 <p>{card?.content}</p>

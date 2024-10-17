@@ -14,6 +14,7 @@ const userSchema = z.object({
 
 
 export const Register = async (req: Request, res: Response) => {
+    console.log(req.body)
 
     try {
         const { email, password } = userSchema.parse(req.body);
@@ -68,6 +69,7 @@ export const Login = async (req: Request, res: Response) => {
 export const verify = async (req: Request, res: Response) => {
     //@ts-ignore
     jwt.verify(req.token, process.env.JWT_SECRET || '', async (err, authData) => {
+        console.log(authData)
         if (err) {
             res.sendStatus(403);
         } else {

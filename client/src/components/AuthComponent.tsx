@@ -32,6 +32,8 @@ const AuthComponent = ({ isLogin }: props) => {
   const navigate = useNavigate();
   const { login, user } = useAuth();
 
+  const token = localStorage.getItem("token")
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -62,7 +64,11 @@ const AuthComponent = ({ isLogin }: props) => {
       setError('An error occurred during authentication');
     }
   };
-
+  React.useEffect(() => {
+    if (!token) {
+      navigate('/login');
+    }
+  }, [token]);
   React.useEffect(() => {
     if (user) {
       navigate('/');

@@ -11,7 +11,7 @@ const Board = () => {
   const [activeId, setActiveId] = useState<any | null>(null);
   const value = useAuth();
   const board = value.currBoard;
-  console.log(activeId)
+
   const token = localStorage.getItem("token")
   useEffect(() => {
     if (board && board.columns) {
@@ -41,6 +41,7 @@ const Board = () => {
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
+    console.log(activeId)
     setActiveId(active.id);
   };
 
@@ -54,13 +55,16 @@ const Board = () => {
 
     if (activeIndex !== overIndex) {
       const newColumns = arrayMove(columns, activeIndex, overIndex);
+
       setColumns(newColumns);
     }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
+    console.log("handle drag end called")
     const { active, over } = event;
-
+    console.log(active)
+    console.log(over)
     if (!over) return;
 
     if (active.id !== over.id) {
@@ -68,6 +72,7 @@ const Board = () => {
       const newIndex = columns.findIndex((col) => col.id === over.id);
 
       const newColumns = arrayMove(columns, oldIndex, newIndex);
+      console.log(newColumns)
       setColumns(newColumns);
       // Optionally: You can make an API call to persist the new order
     }

@@ -18,14 +18,15 @@ model User {
 }
 
 model Board {
-  id         String       @id @default(auto()) @map("_id") @db.ObjectId
-  title      String
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  ownerId    String       @db.ObjectId
-  owner      User         @relation(fields: [ownerId], references: [id])
-  columns    Column[]     @relation(name: "BoardToColumn")
-  Invitation Invitation[]
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  ownerId      String       @db.ObjectId
+  owner        User         @relation(fields: [ownerId], references: [id])
+  columnsOrder String[]
+  columns      Column[]     @relation(name: "BoardToColumn")
+  Invitation   Invitation[]
 }
 
 model Column {

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { Button } from './ui/button'
-// import { useNavigate } from "react-router-dom";
 import AddCard from './AddCard';
 import { useAuth } from '@/context/AuthProvider';
 import { BsThreeDotsVertical } from "react-icons/bs";
@@ -128,9 +127,6 @@ const Navbar = () => {
                         <DropdownMenuLabel>My Account</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => value.logout()} className='cursor-pointer'>Logout</DropdownMenuItem>
-                        {/* <DropdownMenuItem>Billing</DropdownMenuItem>
-                        <DropdownMenuItem>Team</DropdownMenuItem>
-                        <DropdownMenuItem>Subscription</DropdownMenuItem> */}
                     </DropdownMenuContent>
                 </DropdownMenu>
 
