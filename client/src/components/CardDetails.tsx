@@ -21,14 +21,6 @@ import { useAuth } from '@/context/AuthProvider';
 import { Checkbox } from "@/components/ui/checkbox";
 import loader from '../assets/loader.svg';
 import { Button } from './ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import axios from 'axios';
 
 
