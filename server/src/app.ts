@@ -11,7 +11,7 @@ const app = express()
 
 app.use(express.json())
 app.use(cors({
-        origin: "https://easetasks.vercel.app/"
+        origin: "https://easetasks.vercel.app"
     }))
 
 app.get('/readiness', (req: Request, res: Response) => {
