@@ -10,7 +10,9 @@ dotenv.config()
 const app = express()
 
 app.use(express.json())
-app.use(cors())
+app.use(cors({
+        origin: "https://easetasks.vercel.app/"
+    }))
 
 app.get('/readiness', (req: Request, res: Response) => {
     res.status(200).json("Server is awake")
