@@ -14,7 +14,6 @@ const userSchema = z.object({
 
 
 export const Register = async (req: Request, res: Response) => {
-    console.log(req.body)
 
     try {
         const { email, password } = userSchema.parse(req.body);

@@ -100,7 +100,7 @@ const CardDetails = ({ card, column, updateCardInBoard, dialogOpen, setDialogOpe
                 throw new Error('Failed to update card');
             }
         } catch (error) {
-            setEditLoading(false);
+            setEditLoading(false);  
             console.error('Error updating card:', error);
         }
     };
