@@ -1,9 +1,5 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
-
-
-
-const prisma = new PrismaClient();
+import { prisma } from "../utils/dbConnect";
 
 
 export const createColumn = async (req: Request, res: Response) => {
@@ -29,7 +25,11 @@ export const getColumnsByBoardId = async (req: Request, res: Response) => {
         const columns = await prisma.column.findMany({
             where: { boardId },
             include: {
-                cards: true
+                cards: {
+                    include: {
+                        subtasks: true
+                    }
+                }
             }
         });
         res.status(200).json(columns);

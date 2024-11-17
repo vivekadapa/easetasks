@@ -29,18 +29,18 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 
 const Navbar = () => {
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
     const value = useAuth()
     const user = value.user
     const currBoard = value.currBoard
     const [openMenu, setOpenMenu] = useState(false)
     const [alertOpen, setAlertOpen] = useState(false)
     const menuRef = useRef(null)
-
-    const token = localStorage.getItem("token")
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -55,20 +55,22 @@ const Navbar = () => {
         }
     }, [])
 
+    const handleLogout = async () => {
+        await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/auth/logout`, { withCredentials: true })
+        navigate("/landing")
+    }
+
 
     const handleDelete = async () => {
         try {
             await axios.request({
                 url: `${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/board/${currBoard?.id}`,
                 method: "delete",
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
+                withCredentials: true
             })
-            console.log(user?.boards)
-            // value.setCurrBoard(user?.boards[0])
-            value.setCurrBoard(null);
-            value.verifyToken(localStorage.getItem("token") || "")
+            value.setCurrBoard(null)
+            localStorage.removeItem("currBoard")
+            value.checkLoginStatus()
             setAlertOpen(false)
         } catch (error) {
             console.log(error)
@@ -119,14 +121,15 @@ const Navbar = () => {
                 <DropdownMenu>
                     <DropdownMenuTrigger>
                         <Avatar>
-                            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                            {/* @ts-ignore */}
+                            <AvatarImage src={`${user ? user?.avatar : ""}`} alt="avatar" />
                             <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                         <DropdownMenuLabel>My Account</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => value.logout()} className='cursor-pointer'>Logout</DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleLogout} className='cursor-pointer'>Logout</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
 
@@ -135,4 +138,4 @@ const Navbar = () => {
     )
 }
 
-export default Navbar
+export default React.memo(Navbar)

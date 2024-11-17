@@ -1,11 +1,11 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { ThemeProvider } from "./context/ThemeProvider"
-import Layout from "./components/layout"
-// import Home from './pages/Home'
 import { CustomKanban } from "./pages/Home"
-import AuthComponent from "./components/AuthComponent"
 import { AuthProvider } from "./context/AuthProvider"
-
+// import Homev2 from "./components/Homev2"
+import Landing from "./components/Landing"
+import PrivateRoute from "./components/PrivateRoute"
+import Layout from "./components/layout"
 
 function App() {
 
@@ -14,11 +14,11 @@ function App() {
       <AuthProvider>
         <ThemeProvider defaultTheme="dark" storageKey="theme">
           <Routes>
-            <Route element={<Layout />}>
+            <Route element={<PrivateRoute Component={Layout} />}>
               <Route index path="/" element={<CustomKanban />} />
+              {/* <Route path="/v2" element={<PrivateRoute Component={Homev2} />} /> */}
             </Route>
-            <Route path="/login" element={<AuthComponent isLogin={true} />} />
-            <Route path="/register" element={<AuthComponent isLogin={false} />} />
+            <Route path="/landing" element={<Landing />} />
           </Routes>
         </ThemeProvider>
       </AuthProvider>

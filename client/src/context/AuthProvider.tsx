@@ -1,6 +1,4 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useRenderCount } from "@uidotdev/usehooks";
 
 
 
@@ -10,19 +8,26 @@ const AuthContext = createContext<AuthContextType>({
     login: async () => { },
     logout: () => { },
     isAuthenticated: false,
+    isLoading: true,
     verifyToken: () => { },
+    boards: null,
+    setBoards: () => { },
     currBoard: null,
     setCurrBoard: () => { },
-    currBoardWColumns: null,
-    setCurrBoardWColumns: () => { },
     cards: null,
     setCards: () => { },
     fetchColumnsWCards: () => {
         return { columns: [], cards: [] };
-    }
+    },
+    sidebarOff: false,
+    setSideBarOff: () => {
+
+    },
+    checkLoginStatus: () => { }
+
 })
 
-interface Board {
+export interface Board {
     id: string,
     title: string,
     ownerId: string,
@@ -51,98 +56,77 @@ interface AuthContextType {
     login: (email: string, password: string) => Promise<void>;
     logout: () => void;
     isAuthenticated: boolean;
-    verifyToken: (token: string) => void
+    isLoading: boolean;
+    verifyToken: (token: string) => void,
+    boards: any[] | null;
+    setBoards: (board: any) => void;
     currBoard: Board | null
     setCurrBoard: (board: Board | null) => void;
-    currBoardWColumns: any,
-    setCurrBoardWColumns: (board: any | null) => void;
     cards: any,
     setCards: (card: any | null) => void,
-    fetchColumnsWCards: (data: string | null) => { columns: any[]; cards: any[] };
+    fetchColumnsWCards: (data: string | null) => { columns: any[]; cards: any[] },
+    sidebarOff: Boolean,
+    setSideBarOff: (prev: Boolean | null) => void,
+    checkLoginStatus: () => void
 }
 
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [user, setUser] = useState<User | null>(null);
-    const navigate = useNavigate();
-    const [currBoard, setCurrBoard] = useState({})
-    const [currBoardWColumns, setCurrBoardWColumns] = useState([])
+    const [isAuthenticated, setIsAuthenticated] = useState<Boolean>(false);
+    const [isLoading, setIsLoading] = useState<Boolean>(true);
+    const [currBoard, setCurrBoard] = useState(null)
+    const [sidebarOff, setSideBarOff] = useState(false);
     const [cards, setCards] = useState([])
-    const renderCount = useRenderCount();
-    console.log("Render Count " + renderCount)
-    const token = localStorage.getItem('token');
-    useEffect(() => {
-        console.log(token)
-        if (token) {
-            verifyToken(token);
-        }
+    // const renderCount = useRenderCount();
+    // console.log("Render Count " + renderCount)
 
-    }, [currBoard, token]);
 
-    const verifyToken = async (token: string) => {
+    const checkLoginStatus = async () => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/auth/verify`, {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/auth/refresh`, {
                 method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                credentials: 'include',
             });
-
             if (response.ok) {
                 const userData = await response.json();
+                setIsAuthenticated(true);
                 setUser(userData.data);
-                if (currBoard === null || Object.keys(currBoard).length === 0) {
-                    setCurrBoard(userData.data.boards[0]);
+                if (localStorage.getItem("currBoard") === null || localStorage.getItem("currBoard") === undefined) {
+                    localStorage.setItem("currBoard", JSON.stringify(userData?.data?.boards[0]));
+                    setCurrBoard(userData?.data?.boards[0]);
+                }
+                else {
+                    if (currBoard !== null) {
+                        setCurrBoard(JSON.parse(localStorage.getItem("currBoard") || ""));
+                    }
                 }
             } else {
-                localStorage.removeItem('token');
+                setIsAuthenticated(false);
                 setUser(null);
             }
         } catch (error) {
-            console.error('Error verifying token:', error);
+            console.error('Error checking login status:', error);
+            setUser(null);
+        } finally {
+            setIsLoading(false);
         }
     };
-
-    const login = async (email: string, password: string) => {
-        try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/auth/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                localStorage.setItem('token', data.token);
-                setUser(data.user);
-                navigate('/');
-            } else {
-                throw new Error('Login failed');
-            }
-        } catch (error) {
-            console.error('Login error:', error);
-            throw error;
-        }
-    };
-
-    const logout = () => {
-        localStorage.removeItem('token');
-        setUser(null);
-        navigate('/login');
-    };
+    useEffect(() => {
+        checkLoginStatus();
+    }, []);
 
     const value = {
         user,
-        login,
-        logout,
-        verifyToken,
-        isAuthenticated: !!user,
+        isAuthenticated,
+        isLoading,
         currBoard,
         setCurrBoard,
-        currBoardWColumns,
-        setCurrBoardWColumns,
+        checkLoginStatus,
         cards,
         setCards,
+        sidebarOff,
+        setSideBarOff
     };
 
     //@ts-ignore

@@ -22,6 +22,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import loader from '../assets/loader.svg';
 import { Button } from './ui/button';
 import axios from 'axios';
+import React from 'react';
 
 
 const CardDetails = ({ card, column, updateCardInBoard, dialogOpen, setDialogOpen }: any) => {
@@ -33,7 +34,6 @@ const CardDetails = ({ card, column, updateCardInBoard, dialogOpen, setDialogOpe
     const [subtasks, setSubtasks] = useState(card?.subtasks || []);
     const [loading, setLoading] = useState(false);
     const [editLoading, setEditLoading] = useState(false);
-    const token = localStorage.getItem("token")
 
     const [openMenu, setOpenMenu] = useState(false)
 
@@ -46,9 +46,9 @@ const CardDetails = ({ card, column, updateCardInBoard, dialogOpen, setDialogOpe
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({ completed: checked }),
+                credentials: 'include'
             });
 
             if (!response.ok) {
@@ -72,13 +72,13 @@ const CardDetails = ({ card, column, updateCardInBoard, dialogOpen, setDialogOpe
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     priority,
                     columnId: status, // Send the new status (column ID)
                     subtasks: subtasks.map((subtask: any) => ({ id: subtask.id, title: subtask.title, isComplete: subtask.isComplete })), // Ensure subtasks are included if needed
                 }),
+                credentials: 'include'
             });
 
             if (response.ok) {
@@ -92,7 +92,7 @@ const CardDetails = ({ card, column, updateCardInBoard, dialogOpen, setDialogOpe
                 throw new Error('Failed to update card');
             }
         } catch (error) {
-            setEditLoading(false);  
+            setEditLoading(false);
             console.error('Error updating card:', error);
         }
     };
@@ -101,11 +101,10 @@ const CardDetails = ({ card, column, updateCardInBoard, dialogOpen, setDialogOpe
 
     const handleCardDelete = async () => {
         try {
-            const response = await axios.request({
+            await axios.request({
                 url: `${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/card/${card.id}`,
                 method: "delete"
             })
-            console.log(response)
         } catch (error) {
             console.log(error)
         }
@@ -177,7 +176,7 @@ const CardDetails = ({ card, column, updateCardInBoard, dialogOpen, setDialogOpe
                     <Select
                         value={status}
                         onValueChange={(value) => {
-                            console.log(value);
+
                             setStatus(value);
                         }}>
                         <SelectTrigger className="">
@@ -207,4 +206,4 @@ const CardDetails = ({ card, column, updateCardInBoard, dialogOpen, setDialogOpe
     );
 }
 
-export default CardDetails;
+export default React.memo(CardDetails);

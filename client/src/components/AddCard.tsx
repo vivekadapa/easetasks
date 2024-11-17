@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import { motion } from "framer-motion";
 import { FiPlus } from "react-icons/fi";
 import { Button } from "@/components/ui/button"
@@ -31,11 +31,9 @@ import Loader from '../assets/loader.svg'
 const AddCard = () => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("")
-    // const [columns, setColumns] = useState([])
     const value = useAuth()
-    const token = localStorage.getItem("token") || ""
     const board = value.currBoard;
-
+    const [columns, setColumns] = useState([]);
     const [dialogOpen, setDialogOpen] = useState(false)
     const [loading, setLoading] = useState(false);
     const [subtasks, setSubtasks] = useState<string[]>([]);
@@ -43,6 +41,22 @@ const AddCard = () => {
     const [status, setStatus] = useState<string | null>(null);
 
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        const fetchColumns = async (boardId: any) => {
+            const response = await axios.request({
+                url: `${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/column/${boardId}`,
+                method: 'GET',
+            })
+            if (response.status === 200) {
+                setColumns(response.data);
+            }
+        }
+
+        if (board) {
+            fetchColumns(board.id);
+        }
+    }, [board])
 
     const handleAddSubtasks = () => {
         if (subtasks[subtasks.length - 1] !== '') {
@@ -75,7 +89,7 @@ const AddCard = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        const selectedColumn = board?.columns.find((column: any) => column.id === status);
+        const selectedColumn = columns.find((column: any) => column.id === status);
 
         // Determine the order for the new card
         let newOrder = 1; // Default order in case the column has no cards
@@ -101,18 +115,12 @@ const AddCard = () => {
                 url: `${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/card`,
                 method: "post",
                 data: body,
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
+                withCredentials: true
             })
-            console.log(board?.title + " inside add card")
             const updatedBoardResponse = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/board/board/${board?.id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
+                withCredentials: true
             });
             setSubtasks([])
-            console.log("Updated Board Response:", updatedBoardResponse.data);
             value.setCurrBoard(updatedBoardResponse.data);
             setLoading(false)
             setDialogOpen(false)
@@ -134,7 +142,7 @@ const AddCard = () => {
                 >
                     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button variant="outline" onClick={() => setDialogOpen(true)} disabled={board === undefined || board === null || Object.keys(board).length === 0 || board.columns.length === 0}>
+                            <Button variant="outline" onClick={() => setDialogOpen(true)} disabled={board === undefined || board === null || Object.keys(board).length === 0 || columns.length === 0}>
                                 <FiPlus className='mr-2 h-4 w-4' /> Add a new task
                             </Button>
                         </DialogTrigger>
@@ -210,7 +218,6 @@ const AddCard = () => {
                                 <div className='flex flex-col gap-3'>
                                     <Label>Status</Label>
                                     <Select onValueChange={(value) => {
-                                        console.log(value)
                                         setStatus(value)
                                     }}>
                                         <SelectTrigger className="w-[180px]">
@@ -220,9 +227,9 @@ const AddCard = () => {
                                             <SelectGroup>
                                                 <SelectLabel>Status</SelectLabel>
                                                 {
-                                                    board?.columns && board?.columns.length > 0 && board?.columns.map((c: any) => (
+                                                    columns && columns.length > 0 ? columns.map((c: any) => (
                                                         <SelectItem value={c.id}>{c.title}</SelectItem>
-                                                    ))
+                                                    )) : <div className='text-center'>No Columns</div>
                                                 }
                                             </SelectGroup>
                                         </SelectContent>

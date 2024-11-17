@@ -1,16 +1,17 @@
-import { PrismaClient } from "@prisma/client"
 import { Request, Response } from "express"
-
-const prisma = new PrismaClient()
+import { prisma } from "../utils/dbConnect"
 
 export const createBoard = async (req: Request, res: Response) => {
-
-    const { title, userId, columns } = req.body;
+    if (!req.user) {
+        return res.status(401).json({ error: "Unauthorized" });
+    }
+    const { title, columns } = req.body;
     try {
         const board = await prisma.board.create({
             data: {
                 title,
-                owner: { connect: { id: userId } },
+                //@ts-ignore
+                owner: { connect: { id: req.user.id } },
                 columns: {
                     create: columns,
                 },
@@ -72,7 +73,6 @@ export const getBoardById = async (req: Request, res: Response) => {
                 }
             }
         });
-        console.log(board)
 
         if (!board) {
             return res.status(404).json({ error: "Board not found" });
@@ -88,7 +88,6 @@ export const getBoardById = async (req: Request, res: Response) => {
 export const updateBoard = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { title, columns } = req.body;
-    console.log(columns)
     try {
 
         const board = await prisma.board.update({
@@ -132,8 +131,6 @@ export const updateBoard = async (req: Request, res: Response) => {
                 }
             }
         });
-
-        console.log(updatedBoard)
         res.status(200).json(updatedBoard);
     } catch (error) {
         console.error("Error updating board:", error);

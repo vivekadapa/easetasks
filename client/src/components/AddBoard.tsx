@@ -29,7 +29,6 @@ interface AddBoardProps {
 const AddBoard: React.FC<AddBoardProps> = ({ board, existingTitle, existingColumns, isEditMode = false, buttonTitle }) => {
     const [title, setTitle] = useState(existingTitle || "");
     const value = useAuth();
-    const token = localStorage.getItem('token');
     const [oldColumns, setOldColumns] = useState(value?.currBoard?.columns || [])
     const [newColumns, setNewColumns] = useState<string[]>([]);
     const [error, setError] = useState('');
@@ -97,17 +96,13 @@ const AddBoard: React.FC<AddBoardProps> = ({ board, existingTitle, existingColum
             setOpen(false);
             setLoading(true)
             await axios.delete(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/column/${columnToDelete}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
+                withCredentials: true
             });
             const updatedBoardResponse = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/board/board/${board.id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
+                withCredentials: true
             });
-            console.log(updatedBoardResponse.data)
             value.setCurrBoard(updatedBoardResponse.data);
+
             setLoading(false)
             setColumnToDelete(null);
         } catch (error) {
@@ -130,7 +125,6 @@ const AddBoard: React.FC<AddBoardProps> = ({ board, existingTitle, existingColum
 
         const body = {
             title,
-            userId: value.user?.id || "",
             columns: [...oldColumnsBody, ...newColumnsBody]
         };
 
@@ -141,9 +135,7 @@ const AddBoard: React.FC<AddBoardProps> = ({ board, existingTitle, existingColum
                     method: "put",
                     url: `${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/board/${board?.id}`,
                     data: body,
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
+                    withCredentials: true
                 });
 
             } else {
@@ -151,19 +143,18 @@ const AddBoard: React.FC<AddBoardProps> = ({ board, existingTitle, existingColum
                     method: "post",
                     url: `${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/board`,
                     data: body,
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
+                    withCredentials: true
                 });
 
             }
 
+
             setLoading(false);
             setNewColumns([])
-            console.log("After adding board " + JSON.stringify(response.data, null, 2))
+            value.checkLoginStatus()
             setTitle("")
             value.setCurrBoard(response.data);
-
+            localStorage.setItem("currBoard", JSON.stringify(response.data))
             setOpen(false);
         } catch (error) {
             setLoading(false)
@@ -178,7 +169,7 @@ const AddBoard: React.FC<AddBoardProps> = ({ board, existingTitle, existingColum
                     setOpen(true);
                 }}
                 variant={"ghost"}
-                className={`${buttonTitle === "Add Column" ? "h-full" : ""} flex w-full items-center justify-start gap-1.5 pl-6 py-1.5 text-lg font-semibold mx-auto text-neutral-400 transition-colors dark:hover:text-neutral-50 hover:bg-transparent`}
+                className={`${buttonTitle === "Add Column" ? "h-[80vh]" : ""} flex w-full items-center justify-start gap-1.5 pl-6 py-1.5 text-lg font-semibold mx-auto text-neutral-400 transition-colors dark:hover:text-neutral-50 hover:bg-transparent`}
             >
                 {buttonTitle === "Create new board" ?
                     <p className='flex items-center'><MdOutlineSpaceDashboard className='mr-2 h-6 w-6' /><FiPlus className='mr-2 h-4 w-4' /> Create new board </p> :

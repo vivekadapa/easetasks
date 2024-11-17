@@ -32,7 +32,6 @@ const EditCard = ({ card, board, updateCardInBoard, dialogOpen, setDialogOpen }:
   const [status, setStatus] = useState(card?.columnId || null);
   const [error, setError] = useState('');
 
-  const token = localStorage.getItem("token")
 
   useEffect(() => {
     // Prepopulate data from card
@@ -78,16 +77,12 @@ const EditCard = ({ card, board, updateCardInBoard, dialogOpen, setDialogOpen }:
     try {
       // Make API request to update the card
       await axios.put(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/card/${card.id}`, body, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        withCredentials:true
       });
 
       // Fetch updated board data and update state
       const updatedBoardResponse = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/board/board/${board.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        withCredentials:true
       });
       updateCardInBoard(updatedBoardResponse.data);
 

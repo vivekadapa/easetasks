@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../utils/dbConnect";
 
 export const createCard = async (req: Request, res: Response) => {
     try {
@@ -88,37 +86,40 @@ export const updateCard = async (req: Request, res: Response) => {
         const { id } = req.params;
         const { priority, columnId, subtasks } = req.body;
 
-        const oldSubtasks = subtasks.filter((s: any) => s.id)
-        oldSubtasks.map(async (o: any) => {
-            await prisma.subcard.update({
-                where: {
-                    id: o.id
-                },
-                data: {
-                    // parentCardId: id,
-                    title: o.title,
-                    isComplete: o.isComplete
-                }
+        if (subtasks) {
+            const oldSubtasks = subtasks.filter((s: any) => s.id)
+            oldSubtasks.map(async (o: any) => {
+                await prisma.subcard.update({
+                    where: {
+                        id: o.id
+                    },
+                    data: {
+                        // parentCardId: id,
+                        title: o.title,
+                        isComplete: o.isComplete
+                    }
+                })
             })
-        })
-        const newSubtasks = subtasks.filter((s: any) => !s.id)
-        console.log(newSubtasks)
-        let updateNew = null;
-        if (newSubtasks.length > 0) {
-            newSubtasks.map((n: any) => {
-                return { ...n, parentCardId: id }
-            })
-            updateNew = await prisma.user.createMany({
-                data: newSubtasks
-            })
+            const newSubtasks = subtasks.filter((s: any) => !s.id)
+            console.log(newSubtasks)
+            let updateNew = null;
+            if (newSubtasks.length > 0) {
+                newSubtasks.map((n: any) => {
+                    return { ...n, parentCardId: id }
+                })
+                updateNew = await prisma.user.createMany({
+                    data: newSubtasks
+                })
+            }
         }
+
 
         const updatedCard = await prisma.card.update({
             where: {
                 id
             },
             data: {
-                priority: priority,
+                ...(priority !== undefined && { priority: priority }),
                 columnId: columnId
             }
         })
