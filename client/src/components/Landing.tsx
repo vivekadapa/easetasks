@@ -9,8 +9,11 @@ const Landing = () => {
 
 
 
-    const googleLogin = () => {
-        window.open(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/auth/google`, '_self');
+    // const googleLogin = () => {
+    //     window.open(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/auth/google`, '_self');
+    // };
+    const githubLogin = () => {
+        window.open(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/auth/github`, '_self');
     };
 
     return (
@@ -24,7 +27,7 @@ const Landing = () => {
                     </div>
                     <div className="flex items-center space-x-4">
                         <ModeToggle />
-                        <Button onClick={googleLogin}>Get Started</Button>
+                        <Button onClick={githubLogin}>Get Started</Button>
                     </div>
                 </div>
             </nav>
@@ -38,7 +41,7 @@ const Landing = () => {
                         tasks, collaborate with your team, and boost productivity.
                     </p>
                     <div className="flex justify-center gap-4">
-                        <Button onClick={googleLogin} size="lg" className="gap-2">
+                        <Button onClick={githubLogin} size="lg" className="gap-2">
                             Start for Free <ArrowRight className="h-4 w-4" />
                         </Button>
                         {/* <Button size="lg" variant="outline">
@@ -90,7 +93,7 @@ const Landing = () => {
                             Join Easetasks to manage their
                             projects effectively.
                         </p>
-                        <Button onClick={googleLogin} size="lg" className="gap-2">
+                        <Button onClick={githubLogin} size="lg" className="gap-2">
                             Get Started Now <ArrowRight className="h-4 w-4" />
                         </Button>
                     </div>
