@@ -41,6 +41,7 @@ export const initPassport = () => {
             return done(null, user);
         } catch (error) {
             console.log(error);
+            return done(error);
         }
     }));
 
@@ -51,36 +52,39 @@ export const initPassport = () => {
                 clientSecret: process.env.GITHUB_CLIENT_SECRET || '',
                 callbackURL: `${process.env.CALL_BACK_URL}/api/v1/auth/github/callback`,
             },
-            async function (
-                accessToken: string,
-                refreshToken: string,
-                profile: any,
-                done: (error: any, user?: any) => void,
-            ) {
-                const res = await fetch('https://api.github.com/user/emails', {
-                    headers: {
-                        Authorization: `token ${accessToken}`,
-                    },
-                });
-                const data: any[] = await res.json();
-                const primaryEmail = data.find((item) => item.primary === true);
+            async (accessToken: string, refreshToken: string, profile: any, done: any) => {
+                try {
+                    const res = await fetch('https://api.github.com/user/emails', {
+                        headers: { Authorization: `token ${accessToken}` },
+                    });
+                    const data: any[] = await res.json();
 
-                const user = await db.user.upsert({
-                    create: {
-                        email: primaryEmail!.email,
-                        name: profile.displayName,
-                        provider: 'github',
-                    },
-                    update: {
-                        name: profile.displayName,
-                    },
-                    where: {
-                        email: primaryEmail?.email,
-                    },
-                });
+                    const primaryEmail = data.find((item) => item.primary === true);
+                    if (!primaryEmail) {
+                        return done(new Error("No primary email found in GitHub profile"), null);
+                    }
 
-                done(null, user);
-            },
-        ),
+                    const user = await db.user.upsert({
+                        create: {
+                            email: primaryEmail.email,
+                            name: profile.displayName,
+                            provider: 'github',
+                        },
+                        update: {
+                            name: profile.displayName,
+                        },
+                        where: {
+                            email: primaryEmail.email,
+                        },
+                    });
+
+                    console.log("GitHub Auth User:", user);
+                    return done(null, user);
+                } catch (error) {
+                    console.error("GitHub Auth Error:", error);
+                    return done(error, null);
+                }
+            }
+        )
     );
 }

@@ -21,12 +21,14 @@ const app = express()
 
 app.use(cookieParser());
 app.use(session({
-    secret: 'your-secret-key',
+    secret: process.env.SESSION_SECRET || '',
     resave: false,
     saveUninitialized: true,
     cookie: {
+        domain: process.env.CORS_ORIGIN,
         secure: true, // Use secure cookies in production
         sameSite: 'none', // Allow cross-origin cookies
+        maxAge: 24 * 60 * 60 * 1000 * 7
     },
 }));
 app.use(express.json())
@@ -34,6 +36,7 @@ app.use(cors({
     origin: process.env.CORS_ORIGIN,
     methods: 'GET,POST,PUT,DELETE',
     credentials: true,
+    exposedHeaders: ["Set-Cookie"],
 }));
 
 initPassport()

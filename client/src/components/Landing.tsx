@@ -9,9 +9,9 @@ const Landing = () => {
 
 
 
-    // const googleLogin = () => {
-    //     window.open(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/auth/google`, '_self');
-    // };
+    const googleLogin = () => {
+        window.open(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/auth/google`, '_self');
+    };
     const githubLogin = () => {
         window.open(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/auth/github`, '_self');
     };
@@ -93,7 +93,7 @@ const Landing = () => {
                             Join Easetasks to manage their
                             projects effectively.
                         </p>
-                        <Button onClick={githubLogin} size="lg" className="gap-2">
+                        <Button onClick={googleLogin} size="lg" className="gap-2">
                             Get Started Now <ArrowRight className="h-4 w-4" />
                         </Button>
                     </div>
