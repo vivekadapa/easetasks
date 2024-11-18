@@ -24,6 +24,11 @@ app.use(session({
     secret: 'your-secret-key',
     resave: false,
     saveUninitialized: true,
+    cookie: {
+        httpOnly: false,
+        secure: true, // Use secure cookies in production
+        sameSite: 'none', // Required for cross-origin cookies
+    },
 }));
 app.use(express.json())
 app.use(cors({
