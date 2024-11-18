@@ -16,7 +16,7 @@ export const initPassport = () => {
     passport.use(new GoogleStrategy({
         clientID: process.env.GOOGLE_CLIENT_ID || '',
         clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-        callbackURL: `/api/v1/auth/google/callback`,
+        callbackURL: `${process.env.CALL_BACK_URL}/api/v1/auth/google/callback`,
     }, async (accessToken: string, refreshToken: string, profile: any, done: any) => {
         try {
 
