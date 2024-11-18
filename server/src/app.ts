@@ -23,7 +23,7 @@ const app = express()
 
 
 app.use(cookieParser());
-app.set("trust proxy", 1); 
+app.set("trust proxy", 1);
 app.use(session({
     store: new RedisStore({
         //@ts-ignore
@@ -32,10 +32,11 @@ app.use(session({
     secret: process.env.SESSION_SECRET || '',
     resave: false,
     saveUninitialized: true,
+    proxy: true,
     cookie: {
         domain: process.env.DOMAIN,
         secure: true, // Use secure cookies in production
-        httpOnly: true,
+        // httpOnly: true,
         sameSite: 'none',
         // sameSite: 'lax',
         maxAge: 24 * 60 * 60 * 1000 * 7
