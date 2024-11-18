@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
-
+import axios from "axios";
 
 
 const AuthContext = createContext<AuthContextType>({
@@ -84,17 +84,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     const checkLoginStatus = async () => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/auth/refresh`, {
+            const response = await axios.request({
+                url: `${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/auth/refresh`,
                 method: 'GET',
-                credentials: 'include',
+                withCredentials: true
             });
-            if (response.ok) {
-                const userData = await response.json();
+            if (response.status === 200) {
                 setIsAuthenticated(true);
-                setUser(userData.data);
+                setUser(response.data.data);
                 if (localStorage.getItem("currBoard") === null || localStorage.getItem("currBoard") === undefined) {
-                    localStorage.setItem("currBoard", JSON.stringify(userData?.data?.boards[0]));
-                    setCurrBoard(userData?.data?.boards[0]);
+                    localStorage.setItem("currBoard", JSON.stringify(response?.data?.data?.boards[0]));
+                    setCurrBoard(response?.data?.data?.boards[0]);
                 }
                 else {
                     if (currBoard !== null) {

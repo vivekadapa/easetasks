@@ -10,7 +10,9 @@ import { fetchBoard } from './utils/SocketFunctions';
 import passport from 'passport';
 import session from 'express-session';
 import { initPassport } from './utils/Passport';
-
+//@ts-ignore
+import redisClient from './utils/redis';
+import RedisStore from 'connect-redis';
 
 const wss = new WebSocketServer({ port: 8000 });
 console.log('Server started on port 8000');
@@ -19,15 +21,22 @@ console.log('Server started on port 8000');
 dotenv.config()
 const app = express()
 
+
 app.use(cookieParser());
 app.use(session({
+    store: new RedisStore({
+        //@ts-ignore
+        client: redisClient
+    }),
     secret: process.env.SESSION_SECRET || '',
     resave: false,
     saveUninitialized: true,
     cookie: {
-        domain: process.env.CORS_ORIGIN,
+        domain: process.env.DOMAIN,
         secure: true, // Use secure cookies in production
-        sameSite: 'none', // Allow cross-origin cookies
+        httpOnly: true,
+        sameSite: 'none', 
+        // sameSite: 'lax',
         maxAge: 24 * 60 * 60 * 1000 * 7
     },
 }));
@@ -42,7 +51,11 @@ app.use(cors({
 initPassport()
 app.use(passport.initialize());
 app.use(passport.session());
-
+app.use((req, res, next) => {
+    console.log('Session:', req.session);
+    console.log('User:', req.user);
+    next();
+});
 
 app.get('/readiness', (req: Request, res: Response) => {
     res.status(200).json("Server is awake")

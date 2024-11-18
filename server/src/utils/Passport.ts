@@ -1,3 +1,4 @@
+//@ts-nocheck
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as GithubStrategy } from 'passport-github2'
@@ -6,11 +7,16 @@ import { prisma as db } from './dbConnect';
 export const initPassport = () => {
 
     passport.serializeUser((user, done) => {
-        done(null, user);
+        done(null, user.id);
     });
 
-    passport.deserializeUser((user, done) => {
-        done(null, user as any);
+    passport.deserializeUser(async (id, done) => {
+        try {
+            const user = await db.user.findUnique({ where: { id } });
+            done(null, user);
+        } catch (error) {
+            done(error, null);
+        }
     });
 
     // Configure Google strategy
