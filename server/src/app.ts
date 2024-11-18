@@ -2,7 +2,7 @@ import express from 'express'
 import { authRouter, boardRouter, columnRouter, cardRouter, subCardRouter } from './routes'
 import cors from "cors";
 import dotenv from 'dotenv'
-import auth from './middleware/auth'
+import cookieParser from 'cookie-parser';
 import { Request, Response } from 'express';
 import { WebSocketServer } from 'ws';
 import url from 'url';
@@ -19,16 +19,12 @@ console.log('Server started on port 8000');
 dotenv.config()
 const app = express()
 
-
+app.use(cookieParser());
 app.use(session({
     secret: 'your-secret-key',
     resave: false,
     saveUninitialized: true,
-    cookie: {
-        httpOnly: false,
-        secure: true, // Use secure cookies in production
-        sameSite: 'none', // Required for cross-origin cookies
-    },
+    cookie: { secure: false },
 }));
 app.use(express.json())
 app.use(cors({
