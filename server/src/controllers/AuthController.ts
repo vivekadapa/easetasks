@@ -65,6 +65,7 @@ const userSchema = z.object({
 
 
 export const refresh = async (req: Request, res: Response) => {
+    console.log(req.user);
     if (req.user) {
         const user = await prisma.user.findUnique({
             //@ts-ignore
