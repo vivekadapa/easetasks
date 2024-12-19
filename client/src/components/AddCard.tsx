@@ -90,12 +90,9 @@ const AddCard = () => {
         e.preventDefault();
         setLoading(true);
         const selectedColumn = columns.find((column: any) => column.id === status);
-
-        // Determine the order for the new card
-        let newOrder = 1; // Default order in case the column has no cards
+        let newOrder = 1;
         //@ts-ignore
         if (selectedColumn && selectedColumn?.cards.length > 0) {
-            // Get the highest order value from the existing cards in the selected column
             //@ts-ignore
             const highestOrder = Math.max(...selectedColumn?.cards?.map((card: any) => card.order));
             newOrder = highestOrder + 1;
@@ -137,7 +134,6 @@ const AddCard = () => {
             {(
                 <motion.button
                     layout
-                    // onClick={() => setAdding(true)}
                     className="flex items-center gap-1.5 px-3 py-1.5 text-xs dark:text-neutral-400 transition-colors hover:text-neutral-50"
                 >
                     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

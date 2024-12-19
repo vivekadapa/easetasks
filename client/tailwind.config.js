@@ -9,11 +9,15 @@ module.exports = {
   ],
   prefix: "",
   theme: {
+    screens: {
+      custommd: "888px",
+      "2xl": "1400px",  
+    },
     container: {
       center: true,
       padding: "2rem",
       screens: {
-        "2xl": "1400px",
+        "2xl": "1400px"
       },
     },
     extend: {

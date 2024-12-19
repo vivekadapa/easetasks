@@ -16,7 +16,6 @@ function App() {
           <Routes>
             <Route element={<PrivateRoute Component={Layout} />}>
               <Route index path="/" element={<CustomKanban />} />
-              {/* <Route path="/v2" element={<PrivateRoute Component={Homev2} />} /> */}
             </Route>
             <Route path="/landing" element={<Landing />} />
           </Routes>

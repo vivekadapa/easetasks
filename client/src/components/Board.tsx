@@ -76,16 +76,11 @@ const Board = () => {
         },
         body: JSON.stringify({
           // priority,
-          columnId: updatedColumnId, // Send the new status (column ID)
+          columnId: updatedColumnId,
           // subtasks: subtasks.map((subtask: any) => ({ id: subtask.id, title: subtask.title, isComplete: subtask.isComplete })), // Ensure subtasks are included if needed
         }),
         credentials: 'include'
       });
-
-      // if (response.ok) {
-      //     // const updatedCard = await response.json();
-      //     updateCardInBoard(currBoard);
-      // }
       if (!response.ok) {
         throw new Error('Failed to update card');
       }
@@ -186,7 +181,7 @@ const Board = () => {
       }
     }
 
-    // Dropping a Card over a Column
+
     const isOverAColumn = over.data.current?.type === 'column';
 
     if (isActiveACard && isOverAColumn) {
@@ -231,7 +226,6 @@ const Board = () => {
       return;
     }
 
-    // Handle column reordering
     if (active.data.current?.type === 'column') {
       const oldIndex = columns.findIndex((col) => col.id === active.id);
       const newIndex = columns.findIndex((col) => col.id === over.id);

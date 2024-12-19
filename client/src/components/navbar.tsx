@@ -57,6 +57,7 @@ const Navbar = () => {
 
     const handleLogout = async () => {
         await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/auth/logout`, { withCredentials: true })
+        localStorage.removeItem('currBoard');
         navigate("/landing")
     }
 
@@ -78,20 +79,21 @@ const Navbar = () => {
     }
 
     return (
-        <div className='flex fixed px-8 z-50 top-0 w-full items-center border-b-[1px] gap-16  dark:bg-[#0f172a] border-slate-400'>
+        <div className='flex fixed px-8 z-50 top-0 w-full  items-center border-b-[1px] gap-16  dark:bg-[#0f172a] border-slate-400'>
             <div className='p-4 flex items-center gap-2'>
-                <img src="./logo.svg" alt="" className='w-10 h-10' />
-                <h1 className='text-4xl font-bold tracking-tight'>EaseTasks</h1>
+                <img src="./logo.svg" alt="" className='custommd:w-10 custommd:h-10 ' />
+                <h1 className='custommd:text-4xl text-2xl font-bold tracking-tight'>EaseTasks</h1>
             </div>
-            <div className='flex text-2xl dark:text-neutral-100 font-bold flex-grow items-center justify-between px-8'>
+            <div className='custommd:block hidden text-2xl dark:text-neutral-100 font-bold flex-grow items-center justify-between px-8'>
                 {currBoard?.title}
             </div>
-            <div className='flex gap-4 items-center'>
-                <AddCard />
+            <div className='flex flex-1 justify-end gap-4 items-center'>
+                <div>
+                    <AddCard />
+                </div>
                 <button className={`relative ${!currBoard ? "hidden" : "block"}`} ref={menuRef} onClick={() => setOpenMenu((prev) => !prev)}>
                     <BsThreeDotsVertical className='w-8 h-8 p-1 hover:bg-[#e0cece44] cursor-pointer rounded-full' />
                     <div className={`absolute rounded-md w-32 bg-slate-900 text-white top-12 right-2 ${openMenu ? "flex flex-col" : "hidden"}`}>
-                        {/* Trigger Edit Board Dialog */}
                         <AddBoard
                             board={currBoard}
                             existingTitle={currBoard?.title}
@@ -116,23 +118,26 @@ const Navbar = () => {
                                 </AlertDialogFooter>
                             </AlertDialogContent>
                         </AlertDialog>
+                        <button onClick={handleLogout} className='custommd:hidden block cursor-pointer  px-3 py-1.5'>Logout</button>
                     </div>
-                </button>
-                <DropdownMenu>
-                    <DropdownMenuTrigger>
-                        <Avatar>
-                            {/* @ts-ignore */}
-                            <AvatarImage src={`${user ? user?.avatar : ""}`} alt="avatar" />
-                            <AvatarFallback>CN</AvatarFallback>
-                        </Avatar>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={handleLogout} className='cursor-pointer'>Logout</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
 
+                </button>
+                <div className='custommd:block hidden'>
+                    <DropdownMenu >
+                        <DropdownMenuTrigger>
+                            <Avatar>
+                                {/* @ts-ignore */}
+                                <AvatarImage src={`${user ? user?.avatar : ""}`} alt="avatar" />
+                                <AvatarFallback>CN</AvatarFallback>
+                            </Avatar>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={handleLogout} className='cursor-pointer'>Logout</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             </div>
         </div>
     )

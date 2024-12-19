@@ -37,8 +37,7 @@ app.use(session({
         domain: process.env.DOMAIN,
         secure: true, // Use secure cookies in production
         // httpOnly: true,
-        sameSite: 'none',
-        // sameSite: 'lax',
+        sameSite: 'lax',
         maxAge: 24 * 60 * 60 * 1000 * 7
     },
 }));
@@ -55,7 +54,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use((req, res, next) => {
     console.log('Session:', req.session);
-    console.log('User:', req.user);
+    // console.log('User:', req.user);
     next();
 });
 

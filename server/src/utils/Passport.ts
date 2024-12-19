@@ -13,6 +13,7 @@ export const initPassport = () => {
     passport.deserializeUser(async (id, done) => {
         try {
             const user = await db.user.findUnique({ where: { id } });
+            console.log(user)
             done(null, user);
         } catch (error) {
             done(error, null);

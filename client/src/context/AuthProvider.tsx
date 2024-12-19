@@ -75,12 +75,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [user, setUser] = useState<User | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState<Boolean>(false);
     const [isLoading, setIsLoading] = useState<Boolean>(true);
-    const [currBoard, setCurrBoard] = useState(null)
+    const [currBoard, setCurrBoard] = useState(() => {
+        localStorage.getItem("currBoard") ? localStorage.getItem("currBoard") : null
+    })
     const [sidebarOff, setSideBarOff] = useState(false);
     const [cards, setCards] = useState([])
-    // const renderCount = useRenderCount();
-    // console.log("Render Count " + renderCount)
-
 
     const checkLoginStatus = async () => {
         try {
