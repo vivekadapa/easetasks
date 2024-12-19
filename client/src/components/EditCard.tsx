@@ -34,7 +34,6 @@ const EditCard = ({ card, board, updateCardInBoard, dialogOpen, setDialogOpen }:
 
 
   useEffect(() => {
-    // Prepopulate data from card
     setTitle(card?.title);
     setDescription(card?.description);
     setSubtasks(card?.subtasks || []);
@@ -75,12 +74,9 @@ const EditCard = ({ card, board, updateCardInBoard, dialogOpen, setDialogOpen }:
     };
 
     try {
-      // Make API request to update the card
       await axios.put(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/card/${card.id}`, body, {
         withCredentials:true
       });
-
-      // Fetch updated board data and update state
       const updatedBoardResponse = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/v1/board/board/${board.id}`, {
         withCredentials:true
       });
@@ -119,8 +115,6 @@ const EditCard = ({ card, board, updateCardInBoard, dialogOpen, setDialogOpen }:
               />
             </div>
           </div>
-
-          {/* Subtasks */}
           <div className="flex flex-col gap-2">
             {subtasks.map((input, index) => (
               <div key={index} className="flex gap-2 items-center">
@@ -136,7 +130,6 @@ const EditCard = ({ card, board, updateCardInBoard, dialogOpen, setDialogOpen }:
           </div>
           <Button onClick={handleAddSubtasks}>Add New Subtask</Button>
 
-          {/* Priority and Status */}
           <div className="flex gap-3">
             <div className="flex flex-col gap-3">
               <Label>Priority</Label>
@@ -146,7 +139,6 @@ const EditCard = ({ card, board, updateCardInBoard, dialogOpen, setDialogOpen }:
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {/* Add your priority options here */}
                     <SelectItem value="blocker">Blocker</SelectItem>
                     <SelectItem value="high">High</SelectItem>
                   </SelectGroup>
@@ -162,7 +154,6 @@ const EditCard = ({ card, board, updateCardInBoard, dialogOpen, setDialogOpen }:
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {/* Map through board columns */}
                     {board?.columns?.map((col: any) => (
                       <SelectItem key={col.id} value={col.id}>{col.title}</SelectItem>
                     ))}

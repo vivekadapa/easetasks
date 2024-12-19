@@ -71,7 +71,16 @@ export const refresh = async (req: Request, res: Response) => {
             //@ts-ignore
             where: { id: req.user?.id },
             include: {
-                boards: true
+                boards: {
+                    include: {
+                        columns: {
+                            select: {
+                                id: true,
+                                title: true
+                            }
+                        }
+                    }
+                }
             }
         })
         if (user) {

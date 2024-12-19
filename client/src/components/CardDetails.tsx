@@ -75,7 +75,7 @@ const CardDetails = ({ card, column, updateCardInBoard, dialogOpen, setDialogOpe
                 },
                 body: JSON.stringify({
                     priority,
-                    columnId: status, // Send the new status (column ID)
+                    columnId: status,
                     subtasks: subtasks.map((subtask: any) => ({ id: subtask.id, title: subtask.title, isComplete: subtask.isComplete })), // Ensure subtasks are included if needed
                 }),
                 credentials: 'include'

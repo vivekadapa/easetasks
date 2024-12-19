@@ -35,9 +35,9 @@ app.use(session({
     proxy: true,
     cookie: {
         domain: process.env.DOMAIN,
-        secure: true, // Use secure cookies in production
+        secure: process.env.CORS_ORIGIN === 'http://localhost:5173' ? false : true,
         // httpOnly: true,
-        sameSite: 'lax',
+        sameSite: 'none',
         maxAge: 24 * 60 * 60 * 1000 * 7
     },
 }));
@@ -52,11 +52,6 @@ app.use(cors({
 initPassport()
 app.use(passport.initialize());
 app.use(passport.session());
-app.use((req, res, next) => {
-    console.log('Session:', req.session);
-    // console.log('User:', req.user);
-    next();
-});
 
 app.get('/readiness', (req: Request, res: Response) => {
     res.status(200).json("Server is awake")
